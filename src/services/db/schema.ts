@@ -21,6 +21,7 @@ export const schema = {
       title TEXT NOT NULL,
       description TEXT,
       creator TEXT NOT NULL,
+      creatorEmail TEXT,
       creatorType TEXT NOT NULL,
       cookingTime TEXT NOT NULL,
       category TEXT NOT NULL,

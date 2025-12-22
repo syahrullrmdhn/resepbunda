@@ -41,3 +41,19 @@ export async function login(email: string, password: string): Promise<void> {
 export async function logout(): Promise<void> {
   await execSql("UPDATE session SET is_logged_in = 0, email = '', logged_in_at = '' WHERE id = 1");
 }
+
+export async function changePassword(
+  email: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  const e = email.trim().toLowerCase();
+
+  const rows = await querySql<any>("SELECT * FROM users WHERE email = ? LIMIT 1", [e]);
+  const user = rows[0];
+
+  if (!user) throw new AuthError("EMAIL_NOT_FOUND");
+  if (user.password !== currentPassword) throw new AuthError("INVALID_PASSWORD");
+
+  await execSql("UPDATE users SET password = ? WHERE email = ?", [newPassword, e]);
+}

@@ -4,6 +4,7 @@ export interface Recipe {
   title: string;
   description: string;
   creator: string;
+  creatorEmail?: string;
   creatorType: string;
   cookingTime: string;
   category: string;
