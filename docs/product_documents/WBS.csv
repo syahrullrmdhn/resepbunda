@@ -16,10 +16,10 @@ ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est.
 2.4,Home Screen,Category filter chips,Zikri Firmansyah,Todo,,2.2,P1,2,12/24/2025,12/25/2025,Category filter chips; PIC: Zikri Firmansyah; DEPS: 2.2
 2.5,Home Screen,"Filter logic (search, category, privacy)",Zikri Firmansyah,Todo,,"2.3, 2.4",P1,3,12/25/2025,12/26/2025,"Filter logic (search, category, privacy); PIC: Zikri Firmansyah; DEPS: 2.3, 2.4"
 3,Recipe Detail Screen,,Deni Hermawan,Module Todo,,,P0,,12/21/2025,12/23/2025,; PIC: Deni Hermawan
-3.1,Recipe Detail Screen,Layout: header dengan image & title,Deni Hermawan,Todo,,0.2,P0,2,12/21/2025,12/22/2025,Layout: header dengan image & title; PIC: Deni Hermawan; DEPS: 0.2
-3.2,Recipe Detail Screen,Ingredients section,Deni Hermawan,Todo,,3.1,P0,2,12/22/2025,12/23/2025,Ingredients section; PIC: Deni Hermawan; DEPS: 3.1
-3.3,Recipe Detail Screen,Steps section (numbered),Deni Hermawan,Todo,,3.1,P0,2,12/22/2025,12/23/2025,Steps section (numbered); PIC: Deni Hermawan; DEPS: 3.1
-3.4,Recipe Detail Screen,Save/unsave button + logic,Deni Hermawan,Todo,,"0.4, 3.1",P0,2,12/22/2025,12/23/2025,"Save/unsave button + logic; PIC: Deni Hermawan; DEPS: 0.4, 3.1"
+3.1,Recipe Detail Screen,Layout: header dengan image & title,Deni Hermawan,Done,Deni Hermawan,0.2,P0,2,12/21/2025,12/22/2025,Layout: header dengan image & title; PIC: Deni Hermawan; DEPS: 0.2; Review Date: 2025-12-23; Score: 8/10
+3.2,Recipe Detail Screen,Ingredients section,Deni Hermawan,Done,Deni Hermawan,3.1,P0,2,12/22/2025,12/23/2025,Ingredients section; PIC: Deni Hermawan; DEPS: 3.1; Review Date: 2025-12-23; Score: 8/10
+3.3,Recipe Detail Screen,Steps section (numbered),Deni Hermawan,Done,Deni Hermawan,3.1,P0,2,12/22/2025,12/23/2025,Steps section (numbered); PIC: Deni Hermawan; DEPS: 3.1; Review Date: 2025-12-23; Score: 8/10
+3.4,Recipe Detail Screen,Save/unsave button + logic,Deni Hermawan,Needs RC,,"0.4, 3.1",P0,2,12/22/2025,12/23/2025,"Save/unsave button + logic; PIC: Deni Hermawan; DEPS: 0.4, 3.1; Review Date: 2025-12-23; Score: 6/10; Issues: missing created_at, type casting"
 4,My Recipes Screen,,Vointra Namara Fidelito,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Vointra Namara Fidelito
 4.1,My Recipes Screen,Layout dengan tabs (Published/Draft),Vointra Namara Fidelito,Todo,,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan tabs (Published/Draft); PIC: Vointra Namara Fidelito; DEPS: 2.1
 4.2,My Recipes Screen,Filter recipes by authorId,Vointra Namara Fidelito,Todo,,"0.4, 4.1",P0,2,12/24/2025,12/25/2025,"Filter recipes by authorId; PIC: Vointra Namara Fidelito; DEPS: 0.4, 4.1"
