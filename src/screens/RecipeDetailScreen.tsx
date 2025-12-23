@@ -8,11 +8,43 @@ import {
   TouchableOpacity,
   StatusBar,
   Alert,
-  SafeAreaView
+  SafeAreaView,
+  Dimensions,
+  Platform
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Pastikan library ini terinstall
+import { Ionicons } from '@expo/vector-icons';
 
-// --- 1. DEFINISI TIPE DATA (Sesuai IA Document Data Models) ---
+// --- 1. THEME CONFIGURATION ---
+export const theme = {
+  colors: {
+    primary: {
+      DEFAULT: "#059669",
+      light: "#10b981",
+      dark: "#047857",
+      bg: "#ecfdf5",
+    },
+    neutral: {
+      dark: "#1e293b",
+      medium: "#64748b",
+      light: "#e2e8f0",
+      bg: "#f8fafc",
+    },
+    overlay: "rgba(30, 41, 59, 0.4)", 
+    danger: "#ef4444",
+  },
+  radius: { lg: 22, md: 16, sm: 12, pill: 999 },
+  spacing: { xs: 8, sm: 12, md: 16, lg: 20, xl: 28 },
+  font: {
+    regular: "Mulish_400Regular",
+    medium: "Mulish_500Medium",
+    semibold: "Mulish_600SemiBold",
+    bold: "Mulish_700Bold",
+  },
+};
+
+const { width } = Dimensions.get('window');
+
+// --- 2. TYPES & MOCK DATA ---
 type Difficulty = 'Easy' | 'Medium' | 'Hard';
 
 interface Ingredient {
@@ -25,24 +57,23 @@ interface Recipe {
   title: string;
   description: string;
   category: string;
-  time: number; // Dalam menit
+  time: number;
   difficulty: Difficulty;
   imageUrl: string;
   ingredients: Ingredient[];
   steps: string[];
-  authorName: string; // Tambahan untuk UI
+  authorName: string;
 }
 
-// --- 2. MOCK DATA (Data Contoh untuk Test Tampilan Deni) ---
 const DUMMY_RECIPE: Recipe = {
   id: '123',
   title: 'Salmon Panggang Lemon',
-  description: 'Menu sehat kaya omega-3 dengan rasa segar lemon yang menggugah selera keluarga.',
+  description: 'Menu sehat kaya omega-3 dengan rasa segar lemon yang menggugah selera keluarga. Cocok untuk makan malam yang ringan namun bergizi.',
   category: 'Dinner',
   time: 30,
   difficulty: 'Medium',
-  imageUrl: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=2670&auto=format&fit=crop', // Gambar Placeholder
-  authorName: 'Bunda Lesti',
+  imageUrl: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=2670&auto=format&fit=crop',
+  authorName: 'Chef Amanda',
   ingredients: [
     { item: 'Fillet Salmon', qty: '200 gram' },
     { item: 'Jeruk Lemon', qty: '1 buah' },
@@ -51,117 +82,97 @@ const DUMMY_RECIPE: Recipe = {
     { item: 'Garam & Lada', qty: 'Secukupnya' },
   ],
   steps: [
-    'Cuci bersih salmon dan keringkan dengan tisu dapur.',
-    'Peras jeruk lemon di atas salmon, taburi garam dan lada.',
-    'Cincang bawang putih, campurkan dengan minyak zaitun.',
-    'Olesi salmon dengan campuran minyak bawang.',
-    'Panggang di teflon atau oven selama 15-20 menit hingga matang.',
+    'Marinasi Salmon: Lumuri salmon dengan perasan lemon, bawang putih cincang, garam, dan lada. Diamkan selama 10 menit agar bumbu meresap sempurna.',
+    'Panaskan Wajan: Siapkan wajan anti lengket atau grill pan. Beri sedikit minyak zaitun dan panaskan dengan api sedang.',
+    'Panggang Salmon: Letakkan salmon di wajan (bagian kulit di bawah terlebih dahulu). Panggang selama 4-5 menit di setiap sisi sampai matang dan berwarna kecokelatan.',
+    'Penyajian: Angkat dan sajikan dengan irisan lemon segar dan sayuran pendamping sesuai selera.',
   ],
 };
 
-// --- 3. KOMPONEN UTAMA (Task Deni Hermawan) ---
+// --- 3. MAIN COMPONENT (Deni Hermawan Task 3.1 - 3.4) ---
 export default function RecipeDetailScreen() {
-  // Logic Task 3.4: Save/Unsave Button
   const [isSaved, setIsSaved] = useState(false);
 
   const toggleSave = () => {
     setIsSaved(!isSaved);
-    // Feedback visual sederhana
     Alert.alert(
-      isSaved ? "Dihapus" : "Disimpan", 
-      isSaved ? "Resep dihapus dari koleksi." : "Resep berhasil disimpan ke Favorit!"
+      isSaved ? "Dihapus" : "Berhasil Disimpan",
+      isSaved ? "Resep telah dihapus dari koleksi Anda." : "Resep telah ditambahkan ke daftar Simpanan."
     );
-  };
-
-  // Handler Tombol Kembali (Bisa dihubungkan dengan navigation.goBack() nanti)
-  const handleBackPress = () => {
-    console.log('Back pressed');
-    // Jika menggunakan React Navigation, ganti baris ini dengan: navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      {/* PERBAIKAN DI SINI: properti 'transparent' diganti menjadi 'translucent' */}
+      <StatusBar 
+        barStyle="light-content" 
+        translucent={true} 
+        backgroundColor="transparent" 
+      />
       
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
         {/* TASK 3.1: HEADER LAYOUT (Image & Title) */}
         <View style={styles.headerContainer}>
           <Image source={{ uri: DUMMY_RECIPE.imageUrl }} style={styles.headerImage} />
+          <View style={styles.imageOverlay} />
           
-          {/* Overlay agar tombol back terlihat jelas */}
-          <View style={styles.overlay} />
-
-          {/* Tombol Back & Title Overlay */}
-          <SafeAreaView style={styles.headerSafeArea}>
-            <View style={styles.topBar}>
-              <TouchableOpacity 
-                style={styles.circleButton} 
-                onPress={handleBackPress}
-                activeOpacity={0.7} // Tambahan: Efek tekan lebih smooth
-              >
-                <Ionicons name="arrow-back" size={24} color="#FFF" />
-              </TouchableOpacity>
-            </View>
+          <SafeAreaView style={styles.headerNav}>
+            <TouchableOpacity style={styles.backButton} activeOpacity={0.7}>
+              <Ionicons name="arrow-back" size={24} color="#FFF" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.backButton}>
+              <Ionicons name="share-outline" size={24} color="#FFF" />
+            </TouchableOpacity>
           </SafeAreaView>
         </View>
 
-        {/* CONTENT CONTAINER */}
-        <View style={styles.contentContainer}>
-          {/* Judul & Meta Data */}
-          <View style={styles.titleSection}>
-            <Text style={styles.categoryBadge}>{DUMMY_RECIPE.category}</Text>
-            <Text style={styles.title}>{DUMMY_RECIPE.title}</Text>
-            <Text style={styles.author}>Oleh: {DUMMY_RECIPE.authorName}</Text>
-
-            {/* Info Waktu & Kesulitan */}
-            <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <Ionicons name="time-outline" size={18} color="#666" />
-                <Text style={styles.metaText}>{DUMMY_RECIPE.time} Menit</Text>
-              </View>
-              <View style={styles.metaItem}>
-                <Ionicons name="bar-chart-outline" size={18} color="#666" />
-                <Text style={styles.metaText}>{DUMMY_RECIPE.difficulty}</Text>
-              </View>
+        {/* CONTENT AREA */}
+        <View style={styles.mainCard}>
+          <View style={styles.titleWrapper}>
+            <View style={styles.categoryRow}>
+               <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{DUMMY_RECIPE.category}</Text>
+               </View>
+               <View style={[styles.badge, { backgroundColor: theme.colors.primary.bg }]}>
+                  <Text style={[styles.badgeText, { color: theme.colors.primary.dark }]}>{DUMMY_RECIPE.time} Menit</Text>
+               </View>
             </View>
+            
+            <Text style={styles.recipeTitle}>{DUMMY_RECIPE.title}</Text>
+            <Text style={styles.authorText}>Oleh {DUMMY_RECIPE.authorName}</Text>
           </View>
 
-          <View style={styles.divider} />
-
-          {/* Deskripsi */}
-          <Text style={styles.description}>{DUMMY_RECIPE.description}</Text>
+          <Text style={styles.descriptionText}>{DUMMY_RECIPE.description}</Text>
 
           {/* TASK 3.2: INGREDIENTS SECTION */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Bahan-bahan</Text>
-            <View style={styles.ingredientsBox}>
-              {DUMMY_RECIPE.ingredients.map((ing, index) => (
-                <View key={index} style={styles.ingredientRow}>
-                  <View style={styles.bullet} />
-                  <Text style={styles.ingredientText}>
-                    <Text style={{fontWeight: 'bold'}}>{ing.qty}</Text> {ing.item}
-                  </Text>
+            {DUMMY_RECIPE.ingredients.map((ing, idx) => (
+              <View key={idx} style={styles.ingredientCard}>
+                <View style={styles.ingredientInfo}>
+                   <View style={styles.bullet} />
+                   <Text style={styles.ingredientName}>{ing.item}</Text>
                 </View>
-              ))}
-            </View>
+                <Text style={styles.ingredientQty}>{ing.qty}</Text>
+              </View>
+            ))}
           </View>
 
           {/* TASK 3.3: STEPS SECTION (Numbered) */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cara Membuat</Text>
-            {DUMMY_RECIPE.steps.map((step, index) => (
-              <View key={index} style={styles.stepRow}>
-                <View style={styles.stepNumberContainer}>
-                  <Text style={styles.stepNumber}>{index + 1}</Text>
+            {DUMMY_RECIPE.steps.map((step, idx) => (
+              <View key={idx} style={styles.stepContainer}>
+                <View style={styles.stepNumberCircle}>
+                  <Text style={styles.stepNumberText}>{idx + 1}</Text>
                 </View>
-                <Text style={styles.stepText}>{step}</Text>
+                <Text style={styles.stepDescription}>{step}</Text>
               </View>
             ))}
           </View>
-          
-          {/* Space kosong di bawah agar tidak tertutup tombol FAB */}
-          <View style={{height: 100}} />
+
+          <View style={{ height: 100 }} />
         </View>
       </ScrollView>
 
@@ -173,7 +184,7 @@ export default function RecipeDetailScreen() {
       >
         <Ionicons 
           name={isSaved ? "bookmark" : "bookmark-outline"} 
-          size={28} 
+          size={26} 
           color="white" 
         />
       </TouchableOpacity>
@@ -181,180 +192,166 @@ export default function RecipeDetailScreen() {
   );
 }
 
-// --- STYLING (Menggunakan StyleSheet API)  ---
+// --- 4. STYLES ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.neutral.bg,
   },
   scrollContent: {
-    paddingBottom: 20,
+    flexGrow: 1,
   },
-  // Header
   headerContainer: {
-    height: 300,
-    width: '100%',
-    position: 'relative',
+    height: 320,
+    width: width,
   },
   headerImage: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
-  overlay: {
+  imageOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)', // Gelap sedikit agar teks terbaca
+    backgroundColor: theme.colors.overlay,
   },
-  headerSafeArea: {
+  headerNav: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    top: Platform.OS === 'ios' ? 0 : 30, // Penyesuaian jarak atas untuk Android/iOS
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  topBar: {
-    paddingHorizontal: 20,
-    paddingTop: 10, // Disesuaikan jika perlu
-  },
-  circleButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)', // Background tombol sedikit lebih gelap agar kontras
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: theme.radius.pill,
+    backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Content
-  contentContainer: {
-    marginTop: -30, // Efek menumpuk (Card style)
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 24,
-    minHeight: 500,
+  mainCard: {
+    marginTop: -40,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.xl,
+    flex: 1,
   },
-  categoryBadge: {
-    color: '#FF6B6B',
-    fontWeight: '700',
-    fontSize: 12,
-    textTransform: 'uppercase',
-    marginBottom: 4,
+  titleWrapper: {
+    marginBottom: theme.spacing.md,
   },
-  titleSection: {
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  author: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 16,
-  },
-  metaRow: {
+  categoryRow: {
     flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
   },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 20,
-    backgroundColor: '#F7F9FC',
-    paddingVertical: 6,
+  badge: {
+    backgroundColor: theme.colors.primary.DEFAULT,
     paddingHorizontal: 12,
-    borderRadius: 8,
+    paddingVertical: 4,
+    borderRadius: theme.radius.sm,
   },
-  metaText: {
-    marginLeft: 6,
+  badgeText: {
+    color: 'white',
     fontSize: 12,
-    color: '#555',
-    fontWeight: '600',
+    fontWeight: '700', // Font bold manual jika asset belum terload
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#EEE',
-    marginVertical: 16,
+  recipeTitle: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: theme.colors.neutral.dark,
+    lineHeight: 32,
   },
-  description: {
+  authorText: {
+    fontSize: 14,
+    color: theme.colors.neutral.medium,
+    marginTop: 4,
+  },
+  descriptionText: {
     fontSize: 15,
-    color: '#666',
-    lineHeight: 22,
-    marginBottom: 20,
+    color: theme.colors.neutral.medium,
+    lineHeight: 24,
+    marginBottom: theme.spacing.lg,
   },
   section: {
-    marginTop: 16,
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#222',
-    marginBottom: 12,
+    color: theme.colors.neutral.dark,
+    marginBottom: theme.spacing.md,
   },
-  // Ingredients
-  ingredientsBox: {
-    backgroundColor: '#FAFAFA',
-    borderRadius: 12,
-    padding: 16,
+  ingredientCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.neutral.light,
   },
-  ingredientRow: {
+  ingredientInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
   },
   bullet: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: theme.colors.primary.light,
     marginRight: 10,
   },
-  ingredientText: {
+  ingredientName: {
     fontSize: 15,
-    color: '#444',
+    color: theme.colors.neutral.dark,
   },
-  // Steps
-  stepRow: {
+  ingredientQty: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: theme.colors.primary.DEFAULT,
+  },
+  stepContainer: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: 20,
+    gap: 15,
   },
-  stepNumberContainer: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#333',
+  stepNumberCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: theme.colors.neutral.dark,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
     marginTop: 2,
   },
-  stepNumber: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 12,
+  stepNumberText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 14,
   },
-  stepText: {
+  stepDescription: {
     flex: 1,
     fontSize: 15,
-    color: '#444',
-    lineHeight: 22,
+    color: theme.colors.neutral.dark,
+    lineHeight: 24,
   },
-  // FAB (Floating Action Button)
   fab: {
     position: 'absolute',
     bottom: 30,
     right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FF6B6B', // Warna Primary
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: theme.colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
-    // Shadow properties
+    elevation: 6,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    shadowRadius: 4,
   },
 });
