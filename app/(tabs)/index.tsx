@@ -15,35 +15,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// --- 1. THEME CONFIGURATION (Resep Bunda v2.0) ---
-const theme = {
-  colors: {
-    primary: {
-      DEFAULT: "#059669", // Emerald Green
-      light: "#10b981",
-      dark: "#047857",
-      bg: "#ecfdf5",
-    },
-    neutral: {
-      dark: "#1e293b",
-      medium: "#64748b",
-      light: "#e2e8f0",
-      bg: "#f8fafc",
-    },
-    overlay: "rgba(30, 41, 59, 0.4)",
-    danger: "#ef4444",
-  },
-  radius: { lg: 22, md: 16, sm: 12, pill: 999 },
-  spacing: { xs: 8, sm: 12, md: 16, lg: 20, xl: 28 },
-  font: {
-    bold: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'sans-serif-condensed',
-    medium: Platform.OS === 'ios' ? 'Avenir-Medium' : 'sans-serif-medium',
-  }
-};
+// --- IMPORT THEME PUSAT (Sesuai Struktur Proyek v2.0) ---
+import { theme } from "../../src/theme";
 
 const { width } = Dimensions.get('window');
 
-// --- 2. TYPES & DATA ---
+// --- 1. TYPES & DATA ---
 interface Ingredient {
   item: string;
   qty: string;
@@ -113,7 +90,7 @@ const ALL_RECIPES: Recipe[] = [
   },
 ];
 
-// --- 3. KOMPONEN CARD (Task 2.1 - Zikri) ---
+// --- 2. KOMPONEN CARD (Task 2.1 - Zikri) ---
 const RecipeCard = ({ item, onPress }: { item: Recipe, onPress: () => void }) => (
   <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
     <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
@@ -133,17 +110,17 @@ const RecipeCard = ({ item, onPress }: { item: Recipe, onPress: () => void }) =>
   </TouchableOpacity>
 );
 
-// --- 4. KOMPONEN DETAIL (Task 3.1 - 3.4 - Deni) ---
+// --- 3. KOMPONEN DETAIL (Task 3.1 - 3.4 - Deni) ---
 const RecipeDetail = ({ recipe, onBack }: { recipe: Recipe, onBack: () => void }) => {
   const [isSaved, setIsSaved] = useState(false);
   
   return (
     <View style={styles.container}>
-       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+       <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerImageContainer}>
           <Image source={{ uri: recipe.imageUrl }} style={styles.fullImage} />
-          <View style={styles.imageOverlay} />
+          <View style={[styles.imageOverlay, { backgroundColor: theme.colors.overlay }]} />
           <SafeAreaView style={styles.absoluteHeader}>
             <View style={styles.topBarNav}>
               <TouchableOpacity style={styles.backCircle} onPress={onBack}>
@@ -184,7 +161,7 @@ const RecipeDetail = ({ recipe, onBack }: { recipe: Recipe, onBack: () => void }
             <View style={styles.ingredientsContainer}>
               {recipe.ingredients.map((ing, index) => (
                 <View key={index} style={styles.ingRow}>
-                  <View style={styles.ingBullet} />
+                  <View style={[styles.ingBullet, { backgroundColor: theme.colors.primary.DEFAULT }]} />
                   <Text style={styles.ingText}>
                     <Text style={{fontWeight: '700', color: theme.colors.neutral.dark}}>{ing.qty}</Text> {ing.item}
                   </Text>
@@ -211,7 +188,7 @@ const RecipeDetail = ({ recipe, onBack }: { recipe: Recipe, onBack: () => void }
 
       {/* Task 3.4: FAB Save */}
       <TouchableOpacity 
-        style={styles.floatingSaveBtn} 
+        style={[styles.floatingSaveBtn, { backgroundColor: theme.colors.primary.DEFAULT }]} 
         onPress={() => {
           setIsSaved(!isSaved);
           Alert.alert(isSaved ? "Dihapus" : "Disimpan", `Resep ${recipe.title} ${isSaved ? "dihapus" : "disimpan"}!`);
@@ -223,7 +200,7 @@ const RecipeDetail = ({ recipe, onBack }: { recipe: Recipe, onBack: () => void }
   );
 };
 
-// --- 5. KOMPONEN UTAMA ---
+// --- 4. KOMPONEN UTAMA ---
 export default function App() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
@@ -233,7 +210,7 @@ export default function App() {
 
   return (
     <View style={styles.homeBg}>
-      <StatusBar barStyle="dark-content" translucent backgroundColor="white" />
+      <StatusBar barStyle="dark-content" translucent={true} backgroundColor="white" />
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.homeHeaderArea}>
           <Text style={styles.greetingText}>Halo, Bunda Siti! 👋</Text>
@@ -254,7 +231,7 @@ export default function App() {
   );
 }
 
-// --- 6. STYLES (Emerald Theme v2.0) ---
+// --- 5. STYLES (Tetap diletakkan di bawah namun menggunakan token dari import theme) ---
 const styles = StyleSheet.create({
   // Home Styles
   homeBg: { flex: 1, backgroundColor: theme.colors.neutral.bg },
@@ -280,7 +257,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1 },
   headerImageContainer: { height: 340, width: '100%' },
   fullImage: { width: '100%', height: '100%', resizeMode: 'cover' },
-  imageOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: theme.colors.overlay },
+  imageOverlay: { ...StyleSheet.absoluteFillObject },
   absoluteHeader: { position: 'absolute', top: 0, left: 0, right: 0 },
   topBarNav: { paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 40 : 10 },
   backCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(30, 41, 59, 0.5)', justifyContent: 'center', alignItems: 'center' },
@@ -300,11 +277,11 @@ const styles = StyleSheet.create({
   sectionHeading: { fontSize: 19, fontWeight: '800', color: theme.colors.neutral.dark, marginBottom: 16 },
   ingredientsContainer: { backgroundColor: theme.colors.neutral.bg, borderRadius: 20, padding: 20 },
   ingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  ingBullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: theme.colors.primary.DEFAULT, marginRight: 12 },
+  ingBullet: { width: 6, height: 6, borderRadius: 3, marginRight: 12 },
   ingText: { fontSize: 15, color: theme.colors.neutral.medium },
   stepItem: { flexDirection: 'row', marginBottom: 20, gap: 16 },
   stepCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: theme.colors.neutral.dark, justifyContent: 'center', alignItems: 'center', marginTop: 2 },
   stepNum: { color: 'white', fontWeight: '800', fontSize: 14 },
   stepDescText: { flex: 1, fontSize: 15, color: theme.colors.neutral.dark, lineHeight: 24 },
-  floatingSaveBtn: { position: 'absolute', bottom: 30, right: 24, width: 64, height: 64, borderRadius: 32, backgroundColor: theme.colors.primary.DEFAULT, justifyContent: 'center', alignItems: 'center', elevation: 8, shadowColor: theme.colors.primary.dark, shadowOffset: {width:0, height:6}, shadowOpacity:0.3, shadowRadius:8 },
+  floatingSaveBtn: { position: 'absolute', bottom: 30, right: 24, width: 64, height: 64, borderRadius: 32, justifyContent: 'center', alignItems: 'center', elevation: 8, shadowColor: theme.colors.primary.dark, shadowOffset: {width:0, height:6}, shadowOpacity:0.3, shadowRadius:8 },
 });

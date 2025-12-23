@@ -13,25 +13,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// --- 1. THEME CONFIGURATION (Konsisten dengan v2.0) ---
-const theme = {
-  colors: {
-    primary: {
-      DEFAULT: "#059669", // Emerald Green
-      light: "#10b981",
-      bg: "#ecfdf5",
-    },
-    neutral: {
-      dark: "#1e293b",
-      medium: "#64748b",
-      light: "#e2e8f0",
-      bg: "#f8fafc",
-    },
-    danger: "#ef4444",
-  },
-  radius: { lg: 22, md: 16, sm: 12, pill: 999 },
-  spacing: { xs: 8, sm: 12, md: 16, lg: 20, xl: 28 },
-};
+// --- IMPORT THEME PUSAT (Sesuai Proyek v2.0) ---
+import { theme } from "../../src/theme";
 
 const { width } = Dimensions.get('window');
 

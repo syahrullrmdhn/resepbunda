@@ -14,37 +14,13 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// --- 1. THEME CONFIGURATION ---
-export const theme = {
-  colors: {
-    primary: {
-      DEFAULT: "#059669",
-      light: "#10b981",
-      dark: "#047857",
-      bg: "#ecfdf5",
-    },
-    neutral: {
-      dark: "#1e293b",
-      medium: "#64748b",
-      light: "#e2e8f0",
-      bg: "#f8fafc",
-    },
-    overlay: "rgba(30, 41, 59, 0.4)", 
-    danger: "#ef4444",
-  },
-  radius: { lg: 22, md: 16, sm: 12, pill: 999 },
-  spacing: { xs: 8, sm: 12, md: 16, lg: 20, xl: 28 },
-  font: {
-    regular: "Mulish_400Regular",
-    medium: "Mulish_500Medium",
-    semibold: "Mulish_600SemiBold",
-    bold: "Mulish_700Bold",
-  },
-};
+// --- IMPORT THEME PUSAT ---
+// Mengambil konfigurasi warna, spacing, dan font dari file pusat
+import { theme } from "../../src/theme";
 
 const { width } = Dimensions.get('window');
 
-// --- 2. TYPES & MOCK DATA ---
+// --- 1. TYPES & MOCK DATA ---
 type Difficulty = 'Easy' | 'Medium' | 'Hard';
 
 interface Ingredient {
@@ -89,7 +65,7 @@ const DUMMY_RECIPE: Recipe = {
   ],
 };
 
-// --- 3. MAIN COMPONENT (Deni Hermawan Task 3.1 - 3.4) ---
+// --- 2. MAIN COMPONENT (Deni Hermawan Task 3.1 - 3.4) ---
 export default function RecipeDetailScreen() {
   const [isSaved, setIsSaved] = useState(false);
 
@@ -103,9 +79,9 @@ export default function RecipeDetailScreen() {
 
   return (
     <View style={styles.container}>
-      {/* PERBAIKAN DI SINI: properti 'transparent' diganti menjadi 'translucent' */}
+      {/* Task 3.1: StatusBar Translucent */}
       <StatusBar 
-        barStyle="light-content" 
+        barStyle="dark-content" 
         translucent={true} 
         backgroundColor="transparent" 
       />
@@ -115,14 +91,15 @@ export default function RecipeDetailScreen() {
         {/* TASK 3.1: HEADER LAYOUT (Image & Title) */}
         <View style={styles.headerContainer}>
           <Image source={{ uri: DUMMY_RECIPE.imageUrl }} style={styles.headerImage} />
-          <View style={styles.imageOverlay} />
+          {/* Overlay menggunakan token dari theme pusat */}
+          <View style={[styles.imageOverlay, { backgroundColor: theme.colors.overlay }]} />
           
           <SafeAreaView style={styles.headerNav}>
             <TouchableOpacity style={styles.backButton} activeOpacity={0.7}>
-              <Ionicons name="arrow-back" size={24} color="#FFF" />
+              <Ionicons name="arrow-back" size={24} color={theme.colors.neutral.dark} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.backButton}>
-              <Ionicons name="share-outline" size={24} color="#FFF" />
+              <Ionicons name="share-outline" size={24} color={theme.colors.neutral.dark} />
             </TouchableOpacity>
           </SafeAreaView>
         </View>
@@ -192,7 +169,7 @@ export default function RecipeDetailScreen() {
   );
 }
 
-// --- 4. STYLES ---
+// --- 3. STYLES (Style tetap di dalam kode namun menggunakan token theme) ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -212,11 +189,10 @@ const styles = StyleSheet.create({
   },
   imageOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: theme.colors.overlay,
   },
   headerNav: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 0 : 30, // Penyesuaian jarak atas untuk Android/iOS
+    top: Platform.OS === 'ios' ? 0 : 30,
     left: 20,
     right: 20,
     flexDirection: 'row',
@@ -227,7 +203,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: theme.radius.pill,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Transparansi putih agar ikon gelap terlihat
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -257,21 +233,23 @@ const styles = StyleSheet.create({
   badgeText: {
     color: 'white',
     fontSize: 12,
-    fontWeight: '700', // Font bold manual jika asset belum terload
+    fontFamily: theme.font.bold,
   },
   recipeTitle: {
     fontSize: 26,
-    fontWeight: '700',
+    fontFamily: theme.font.bold,
     color: theme.colors.neutral.dark,
     lineHeight: 32,
   },
   authorText: {
     fontSize: 14,
+    fontFamily: theme.font.medium,
     color: theme.colors.neutral.medium,
     marginTop: 4,
   },
   descriptionText: {
     fontSize: 15,
+    fontFamily: theme.font.regular,
     color: theme.colors.neutral.medium,
     lineHeight: 24,
     marginBottom: theme.spacing.lg,
@@ -281,7 +259,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: theme.font.bold,
     color: theme.colors.neutral.dark,
     marginBottom: theme.spacing.md,
   },
@@ -306,11 +284,12 @@ const styles = StyleSheet.create({
   },
   ingredientName: {
     fontSize: 15,
+    fontFamily: theme.font.medium,
     color: theme.colors.neutral.dark,
   },
   ingredientQty: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: theme.font.bold,
     color: theme.colors.primary.DEFAULT,
   },
   stepContainer: {
@@ -329,12 +308,12 @@ const styles = StyleSheet.create({
   },
   stepNumberText: {
     color: 'white',
-    fontWeight: '700',
+    fontFamily: theme.font.bold,
     fontSize: 14,
   },
   stepDescription: {
     flex: 1,
-    fontSize: 15,
+    fontFamily: theme.font.regular,
     color: theme.colors.neutral.dark,
     lineHeight: 24,
   },
@@ -349,7 +328,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
-    shadowColor: "#000",
+    shadowColor: theme.colors.primary.dark,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 4,

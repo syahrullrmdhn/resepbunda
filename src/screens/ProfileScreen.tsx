@@ -13,26 +13,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// --- 1. THEME CONFIGURATION (Resep Bunda v2.0) ---
-const theme = {
-  colors: {
-    primary: {
-      DEFAULT: "#059669",
-      light: "#10b981",
-      dark: "#047857",
-      bg: "#ecfdf5",
-    },
-    neutral: {
-      dark: "#1e293b",
-      medium: "#64748b",
-      light: "#e2e8f0",
-      bg: "#f8fafc",
-    },
-    danger: "#ef4444",
-  },
-  radius: { lg: 22, md: 16, sm: 12, pill: 999 },
-  spacing: { xs: 8, sm: 12, md: 16, lg: 20, xl: 28 },
-};
+// --- IMPORT THEME PUSAT (Sesuai Struktur Proyek v2.0) ---
+import { theme } from "../../src/theme";
 
 const { width } = Dimensions.get('window');
 
@@ -256,6 +238,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: theme.colors.primary.DEFAULT,
   },
+  // --- INI PERBAIKANNYA: Nama diganti dari statNumberLabel menjadi statLabel ---
   statLabel: {
     fontSize: 12,
     color: theme.colors.neutral.medium,
