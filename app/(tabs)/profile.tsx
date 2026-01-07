@@ -135,7 +135,7 @@ export default function Profile() {
     <View style={styles.container}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + theme.spacing.sm }]}>
-        <Text style={styles.headerTitle}>Edit Profil &amp; Akun</Text>
+        <Text style={styles.headerTitle}>Edit Profil & Akun</Text>
       </View>
 
       <ScrollView
@@ -155,7 +155,7 @@ export default function Profile() {
               </View>
             )}
             <TouchableOpacity style={styles.cameraBtn} onPress={handleChangePhoto}>
-              <Camera size={20} color="white" />
+              <Camera size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
           <Text style={styles.photoHint}>Ketuk untuk ubah foto</Text>
@@ -235,15 +235,15 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.neutral.bg,
+    backgroundColor: theme.colors.neutral.bg, // Theme
   },
   header: {
     alignItems: "center",
     justifyContent: "center",
     paddingBottom: theme.spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.neutral.light,
-    backgroundColor: theme.colors.neutral.bg,
+    borderBottomColor: theme.colors.neutral.light, // Theme
+    backgroundColor: theme.colors.neutral.bg, // Theme
   },
   headerTitle: {
     fontSize: 18,
@@ -268,17 +268,17 @@ const styles = StyleSheet.create({
     height: 112,
     borderRadius: 56,
     borderWidth: 4,
-    borderColor: "white",
+    borderColor: "#FFFFFF", // Tetap putih agar kontras dengan foto
   },
   avatarPlaceholder: {
     width: 112,
     height: 112,
     borderRadius: 56,
-    backgroundColor: theme.colors.neutral.light,
+    backgroundColor: theme.colors.neutral.light, // Theme
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 4,
-    borderColor: "white",
+    borderColor: "#FFFFFF",
     shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: "#FFFFFF",
     shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -326,9 +326,9 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xs,
   },
   input: {
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: theme.colors.neutral.light,
+    borderColor: theme.colors.neutral.light, // Theme
     borderRadius: theme.radius.sm,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: 14,
@@ -372,11 +372,11 @@ const styles = StyleSheet.create({
   saveBtnText: {
     fontSize: 14,
     fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
+    color: "#FFFFFF", // Text tombol primary biasanya putih
   },
   divider: {
     height: 1,
-    backgroundColor: theme.colors.neutral.light,
+    backgroundColor: theme.colors.neutral.light, // Theme
     marginVertical: theme.spacing.xl,
   },
   actionsSection: {
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     padding: theme.spacing.md,
     borderRadius: theme.radius.sm,
     shadowColor: theme.colors.shadow,

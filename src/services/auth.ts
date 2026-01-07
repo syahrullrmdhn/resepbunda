@@ -1,5 +1,5 @@
 import type { AuthSession } from "../types/auth";
-import { execSql, querySql } from "./db/dbClient";
+import { execSql, querySql } from "./db/client";
 
 export type AuthErrorCode = "EMAIL_NOT_FOUND" | "INVALID_PASSWORD" | "EMAIL_ALREADY_USED";
 
