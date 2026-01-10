@@ -305,18 +305,6 @@ export default function LoginScreen() {
                 </Text>
               </Pressable>
 
-              <Text
-                style={{
-                  marginTop: 10,
-                  fontSize: 11,
-                  color: theme.colors.neutral.medium,
-                  textAlign: "center",
-                  fontFamily: theme.font.regular,
-                }}
-              >
-                Mock: bunda@example.com / Bunda123!
-              </Text>
-
               {/* Branding ITTS (paling bawah) */}
               <View
                 style={{

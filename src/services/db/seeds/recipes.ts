@@ -1,67 +1,70 @@
-export const recipes = [
-  {
-    title: "Soo-iga Sapi Special",
-    description: "Iga sapi bakar dengan bumbu kecap pedas manis yang meresap.",
-    creator: "Bundikas",
-    creatorType: "Chef",
-    cookingTime: "45 min",
-    category: "special",
-    isPrivate: false,
-    rating: 4.8,
-    calories: "450 kkal",
-    ingredients: ["500g Iga Sapi", "5 siung Bawang Putih", "3 sdm Kecap Manis", "Cabai Rawit", "Jeruk Nipis", "Garam & Lada"],
-    steps: ["Rebus iga hingga empuk.", "Tumis bawang dan cabai.", "Masukkan iga, bumbui kecap, garam, lada.", "Panggang sambil oles bumbu.", "Sajikan dengan jeruk nipis."],
-  },
-  {
-    title: "Salmon Teriyaki Sehat",
-    description: "Menu sehat omega-3 dengan saus teriyaki rendah gula.",
-    creator: "Mundikas",
-    creatorType: "Chef",
-    cookingTime: "20 min",
-    category: "healthy",
-    isPrivate: false,
-    rating: 4.9,
-    calories: "320 kkal",
-    ingredients: ["200g Salmon", "Saus Teriyaki", "Brokoli", "Wijen", "Minyak Zaitun"],
-    steps: ["Marinasi salmon 10 menit.", "Blansir brokoli 2 menit.", "Panaskan pan.", "Panggang salmon 3-4 menit per sisi.", "Sajikan dengan wijen."],
-  },
-  {
-    title: "Puding Mangga Susu",
-    description: "Dessert lembut mangga harum manis dan susu segar.",
-    creator: "Subarkusak",
-    creatorType: "Chef",
-    cookingTime: "60 min",
-    category: "dessert",
-    isPrivate: false,
-    rating: 4.7,
-    calories: "210 kkal",
-    ingredients: ["2 Mangga", "500ml Susu", "Agar-agar", "Gula"],
-    steps: ["Blender mangga.", "Masak agar + gula + susu sampai mendidih.", "Masukkan jus mangga.", "Tuang ke cetakan.", "Dinginkan 1 jam."],
-  },
-  {
-    title: "Nasi Goreng Kampung",
-    description: "Nasi goreng autentik dengan terasi dan telur orak-arik.",
-    creator: "Masekah",
-    creatorType: "Chef",
-    cookingTime: "30 min",
-    category: "traditional",
-    isPrivate: false,
-    rating: 4.6,
-    calories: "500 kkal",
-    ingredients: ["Nasi dingin", "Terasi", "Bawang Merah", "Bawang Putih", "Telur", "Kecap Asin"],
-    steps: ["Tumis bumbu + terasi.", "Orak-arik telur.", "Masukkan nasi.", "Bumbui kecap asin.", "Aduk sampai harum."],
-  },
-  {
-    title: "Sup Ayam Rumahan",
-    description: "Sup hangat sederhana untuk menu sehari-hari.",
-    creator: "Bu Tati",
-    creatorType: "Home Cook",
-    cookingTime: "35 min",
-    category: "all",
-    isPrivate: false,
-    rating: 4.4,
-    calories: "280 kkal",
-    ingredients: ["Ayam", "Wortel", "Kentang", "Daun Bawang", "Bawang Putih", "Garam"],
-    steps: ["Rebus ayam.", "Masukkan sayur.", "Bumbui.", "Masak hingga empuk.", "Taburi daun bawang."],
-  },
-];
+import { execSql, querySql } from "../client"; // Import dari client yg baru
+
+export const seedRecipes = async () => {
+  try {
+    const check = await querySql("SELECT count(*) as count FROM recipes");
+    // @ts-ignore
+    if (check[0]?.count > 0) {
+      console.log("✅ Recipes already seeded, skipping...");
+      return;
+    }
+
+    console.log("🌱 Seeding Recipes...");
+    
+    // Kita pakai email Mas Lutfi (Ketua) sebagai pemilik resep
+    const defaultCreatorEmail = "1001230027@student.com"; 
+    const defaultCreatorName = "Lutfi Dwi Maftia Z.";
+
+    const recipes = [
+      {
+        title: "Nasi Goreng Spesial",
+        desc: "Nasi goreng kampung dengan bumbu rahasia keluarga, cocok untuk sarapan.",
+        time: "15 mnt",
+        cat: "breakfast",
+        calories: "300 kkal",
+      },
+      {
+        title: "Sop Iga Sapi",
+        desc: "Sop iga dengan kuah bening yang segar dan daging empuk meresap.",
+        time: "60 mnt",
+        cat: "lunch",
+        calories: "450 kkal",
+      },
+      {
+        title: "Pancake Fluffy",
+        desc: "Pancake super lembut ala cafe Jepang, manis dan lumer di mulut.",
+        time: "20 mnt",
+        cat: "dessert",
+        calories: "250 kkal",
+      }
+    ];
+
+    for (const r of recipes) {
+      await execSql(
+        `INSERT INTO recipes (
+          title, description, creator, creatorType, creator_email, 
+          cookingTime, category, isPrivate, rating, calories, 
+          ingredients, steps, image
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          r.title,
+          r.desc,
+          defaultCreatorName,
+          "Home Cook",
+          defaultCreatorEmail,
+          r.time,
+          r.cat,
+          0, // 0 = Public
+          5.0,
+          r.calories,
+          JSON.stringify(["Bahan A", "Bahan B", "Bumbu Rahasia"]),
+          JSON.stringify(["Siapkan bahan", "Masak hingga matang", "Sajikan hangat"]),
+          null 
+        ]
+      );
+    }
+    console.log("✅ Recipes seeded successfully!");
+  } catch (e) {
+    console.error("❌ Seed Recipes Error:", e);
+  }
+};

@@ -88,10 +88,6 @@ export default function HomeScreen() {
     setSelectedCategory(newCategory);
   };
 
-  const handleRecipePress = (recipeId: number) => {
-    router.push(`/recipe/${recipeId}`);
-  };
-
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       {/* Greeting Section */}
@@ -107,7 +103,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Search Bar - Floating Style */}
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
           <Search size={20} color={theme.colors.neutral.medium} style={styles.searchIcon} />
@@ -125,7 +121,7 @@ export default function HomeScreen() {
           onPress={() => setFilterModalVisible(true)}
           activeOpacity={0.8}
         >
-          <SlidersHorizontal size={20} color="white" />
+          <SlidersHorizontal size={20} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -174,7 +170,7 @@ export default function HomeScreen() {
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <View style={styles.cardWrapper}>
-            <RecipeCard recipe={item} onPress={() => handleRecipePress(item.id)} />
+            <RecipeCard recipe={item} onPress={() => router.push(`/recipe/${item.id}`)} />
           </View>
         )}
         ListHeaderComponent={renderHeader}
@@ -183,7 +179,7 @@ export default function HomeScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <View style={styles.emptyIconBg}>
-              <ChefHat size={40} color={theme.colors.neutral.medium} />
+              <ChefHat size={40} color={theme.colors.primary.DEFAULT} />
             </View>
             <Text style={styles.emptyTitle}>No Recipes Found</Text>
             <Text style={styles.emptySubtitle}>Try adjusting your search or filters</Text>
@@ -205,7 +201,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: theme.colors.neutral.bg, // Standarisasi
   },
   listContent: {
     paddingBottom: 30,
@@ -224,9 +220,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingTop: theme.spacing.md,
     marginBottom: 20,
-    flexDirection: "row", // Align items horizontally
-    justifyContent: "space-between", // Push items to edges
-    alignItems: "center", // Vertically align items
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   greetingText: {
     fontSize: 26,
@@ -252,7 +248,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB", // Same as inactive chip
+    borderColor: theme.colors.neutral.light, // Standarisasi Border
   },
 
   // Search Section
@@ -268,9 +264,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: theme.radius.md,
     height: 50,
-    shadowColor: "#000",
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -291,7 +287,7 @@ const styles = StyleSheet.create({
   filterButton: {
     width: 50,
     height: 50,
-    borderRadius: 16,
+    borderRadius: theme.radius.md,
     backgroundColor: theme.colors.primary.DEFAULT,
     justifyContent: "center",
     alignItems: "center",
@@ -320,7 +316,7 @@ const styles = StyleSheet.create({
   categoryChipInactive: {
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: theme.colors.neutral.light, // Standarisasi Border
   },
   categoryChipActive: {
     backgroundColor: theme.colors.primary.DEFAULT,
@@ -365,7 +361,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: theme.colors.primary.bg, // Standarisasi BG (Hijau Muda)
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,

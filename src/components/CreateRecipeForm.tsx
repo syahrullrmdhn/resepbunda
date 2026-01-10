@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { SELECTABLE_CATEGORIES } from "../src/constants/categories";
-import { execSql, querySql } from "../src/services/db";
-import { theme } from "../src/theme";
+import { SELECTABLE_CATEGORIES } from "../constants/categories";
+import { execSql, querySql } from "../services/db";
+import { theme } from "../theme";
 
 export default function CreateRecipeForm() {
   const [title, setTitle] = useState("");
