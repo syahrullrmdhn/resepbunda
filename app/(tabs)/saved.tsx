@@ -1,9 +1,3 @@
-import { Text, View } from "react-native";
-
-export default function Saved() {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Disimpan</Text>
-    </View>
-  );
-}
+import React from 'react';
+import SavedRecipesScreen from '../../src/screens/SavedRecipesScreen';
+export default function SavedRoute() { return <SavedRecipesScreen />; }
