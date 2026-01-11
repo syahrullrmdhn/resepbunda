@@ -8,6 +8,9 @@ export interface Recipe {
   cookingTime: string;
   category: string;
   isPrivate: 0 | 1;
+  // Derived per-user flag: computed from saved_recipes (join table)
+  // Not persisted in recipes table; optional for UI convenience
+  isFavorite?: 0 | 1;
   rating: number;
   calories: string;
   ingredients: string; // JSON stringified array

@@ -1,19 +1,19 @@
 ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est. Hours,Start Date,End Date,Final Info
 0,Project Setup,,Jumanta,Module Todo,,,P0,,12/19/2025,12/22/2025,; PIC: Jumanta
-0.1,Project Setup,Init RN project + dependencies,Jumanta,Done,Syahrul Ramadhan,,P0,2,12/19/2025,12/20/2025,Init RN project + dependencies; PIC: Jumanta; Done By: Syahrul Ramadhan; Review Date: 2025-12-22
-0.2,Project Setup,"Navigation setup (Stack, Tab, Modal)",Jumanta,Todo,,0.1,P0,3,12/20/2025,12/21/2025,"Navigation setup (Stack, Tab, Modal); PIC: Jumanta; DEPS: 0.1"
-0.3,Project Setup,TypeScript types & interfaces,Jumanta,Todo,,0.1,P0,2,12/21/2025,12/22/2025,TypeScript types & interfaces; PIC: Jumanta; DEPS: 0.1
+0.1,Project Setup,Init RN project + dependencies,Jumanta,Done,Syahrul Ramadhan,,P0,2,12/19/2025,12/20/2025,Init RN project + dependencies; PIC: Jumanta; Done By: Syahrul Ramadhan
+0.2,Project Setup,"Navigation setup (Stack, Tab, Modal)",Jumanta,Done,Syahrul Ramadhan,0.1,P0,3,12/20/2025,12/21/2025,"Navigation setup (Stack, Tab, Modal); PIC: Jumanta; Done By: Syahrul Ramadhan; DEPS: 0.1"
+0.3,Project Setup,TypeScript types & interfaces,Jumanta,Done,Syahrul Ramadhan,0.1,P0,2,12/21/2025,12/22/2025,TypeScript types & interfaces; PIC: Jumanta; Done By: Syahrul Ramadhan; DEPS: 0.1
 0.4,Project Setup,SQLite database helpers + mock data,Jumanta,Todo,,0.1,P0,2,12/21/2025,12/22/2025,SQLite database helpers + mock data; PIC: Jumanta; DEPS: 0.1
 0.5,Project Setup,Git workflow & PR template,Jumanta,Todo,,0.1,P0,1,12/21/2025,12/22/2025,Git workflow & PR template; PIC: Jumanta; DEPS: 0.1
 1,Login Screen,,Syahrul Ramadhan,Module Todo,,,P0,,12/21/2025,12/23/2025,; PIC: Syahrul Ramadhan
-1.1,Login Screen,UI: form email & password,Syahrul Ramadhan,Todo,,0.2,P0,2,12/21/2025,12/22/2025,UI: form email & password; PIC: Syahrul Ramadhan; DEPS: 0.2
-1.2,Login Screen,Logic: validate & save to storage (mock),Syahrul Ramadhan,Todo,,"0.4, 1.1",P0,2,12/22/2025,12/23/2025,"Logic: validate & save to storage (mock); PIC: Syahrul Ramadhan; DEPS: 0.4, 1.1"
-1.3,Login Screen,Forgot password (mailto link),Syahrul Ramadhan,Todo,,1.1,P1,1,12/22/2025,12/23/2025,Forgot password (mailto link); PIC: Syahrul Ramadhan; DEPS: 1.1
+1.1,Login Screen,UI: form email & password,Syahrul Ramadhan,Done,,0.2,P0,2,12/21/2025,12/22/2025,UI: form email & password; PIC: Syahrul Ramadhan; DEPS: 0.2
+1.2,Login Screen,Logic: validate & save to storage (mock),Syahrul Ramadhan,Done,,"0.4, 1.1",P0,2,12/22/2025,12/23/2025,"Logic: validate & save to storage (mock); PIC: Syahrul Ramadhan; DEPS: 0.4, 1.1"
+1.3,Login Screen,Forgot password (mailto link),Syahrul Ramadhan,Done,,1.1,P1,1,12/22/2025,12/23/2025,Forgot password (mailto link); PIC: Syahrul Ramadhan; DEPS: 1.1
 2,Home Screen,,Zikri Firmansyah,Module Todo,,,P0,,12/22/2025,12/26/2025,; PIC: Zikri Firmansyah
-2.1,Home Screen,Recipe card component,Zikri Firmansyah,Todo,,0.3,P0,3,12/22/2025,12/23/2025,Recipe card component; PIC: Zikri Firmansyah; DEPS: 0.3
-2.2,Home Screen,Feed layout dengan FlatList,Zikri Firmansyah,Todo,,2.1,P0,2,12/23/2025,12/24/2025,Feed layout dengan FlatList; PIC: Zikri Firmansyah; DEPS: 2.1
-2.3,Home Screen,Search bar,Zikri Firmansyah,Todo,,2.2,P1,2,12/24/2025,12/25/2025,Search bar; PIC: Zikri Firmansyah; DEPS: 2.2
-2.4,Home Screen,Category filter chips,Zikri Firmansyah,Todo,,2.2,P1,2,12/24/2025,12/25/2025,Category filter chips; PIC: Zikri Firmansyah; DEPS: 2.2
+2.1,Home Screen,Recipe card component,Zikri Firmansyah,Done,Zikri Firmansyah,0.3,P0,3,12/22/2025,12/23/2025,Recipe card component; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 0.3
+2.2,Home Screen,Feed layout dengan FlatList,Zikri Firmansyah,Done,Zikri Firmansyah,2.1,P0,2,12/23/2025,12/24/2025,Feed layout dengan FlatList; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 2.1
+2.3,Home Screen,Search bar,Zikri Firmansyah,Done,Zikri Firmansyah,2.2,P1,2,12/24/2025,12/25/2025,Search bar; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 2.2
+2.4,Home Screen,Category filter chips,Zikri Firmansyah,Done,Zikri Firmansyah,2.2,P1,2,12/24/2025,12/25/2025,Category filter chips; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 2.2
 2.5,Home Screen,"Filter logic (search, category, privacy)",Zikri Firmansyah,Todo,,"2.3, 2.4",P1,3,12/25/2025,12/26/2025,"Filter logic (search, category, privacy); PIC: Zikri Firmansyah; DEPS: 2.3, 2.4"
 3,Recipe Detail Screen,,Deni Hermawan,Module Todo,,,P0,,12/21/2025,12/23/2025,; PIC: Deni Hermawan
 3.1,Recipe Detail Screen,Layout: header dengan image & title,Deni Hermawan,Todo,,0.2,P0,2,12/21/2025,12/22/2025,Layout: header dengan image & title; PIC: Deni Hermawan; DEPS: 0.2
@@ -40,9 +40,9 @@ ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est.
 7,Profile Screen,,Syahrul Ramadhan,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Syahrul Ramadhan
 7.1,Profile Screen,"UI: avatar, name, bio display",Syahrul Ramadhan,Todo,,"0.3, 1.2",P0,2,12/23/2025,12/24/2025,"UI: avatar, name, bio display; PIC: Syahrul Ramadhan; DEPS: 0.3, 1.2"
 7.2,Profile Screen,Edit profile form,Syahrul Ramadhan,Todo,,7.1,P1,3,12/24/2025,12/25/2025,Edit profile form; PIC: Syahrul Ramadhan; DEPS: 7.1
-7.3,Profile Screen,Logout button + logic,Syahrul Ramadhan,Todo,,"0.4, 7.1",P0,1,12/24/2025,12/25/2025,Logout button + logic; PIC: Syahrul Ramadhan; DEPS: 0.4, 7.1
+7.3,Profile Screen,Logout button + logic,Syahrul Ramadhan,Todo,,"0.4, 7.1",P0,1,12/24/2025,12/25/2025,"Logout button + logic; PIC: Syahrul Ramadhan; DEPS: 0.4, 7.1"
 R,Code Review,,R. Purba Kusuma,Module Todo,,,P0,,12/22/2025,12/26/2025,; PIC: R. Purba Kusuma
-R.1,Code Review,Review: Setup & types,R. Purba Kusuma,Done,,0.5,P0,1,12/22/2025,12/22/2025,"Review: Setup & types; PIC: R. Purba Kusuma; DEPS: 0.5; Review Date: 2025-12-22"
+R.1,Code Review,Review: Setup & types,R. Purba Kusuma,Todo,,0.5,P0,1,12/22/2025,12/22/2025,Review: Setup & types; PIC: R. Purba Kusuma; DEPS: 0.5
 R.2,Code Review,Review: Login screen,R. Purba Kusuma,Todo,,1.3,P0,1,12/23/2025,12/23/2025,Review: Login screen; PIC: R. Purba Kusuma; DEPS: 1.3
 R.3,Code Review,Review: Home screen,R. Purba Kusuma,Todo,,2.5,P0,2,12/26/2025,12/26/2025,Review: Home screen; PIC: R. Purba Kusuma; DEPS: 2.5
 R.4,Code Review,Review: Recipe detail,R. Purba Kusuma,Todo,,3.4,P0,1,12/23/2025,12/23/2025,Review: Recipe detail; PIC: R. Purba Kusuma; DEPS: 3.4
@@ -55,11 +55,11 @@ Q,Lutfi Zain Testing,,Lutfi Zain,Module Todo,,,P0,,12/22/2025,12/31/2025,; PIC: 
 Q.1,Lutfi Zain Testing,Test plan & setup environment,Lutfi Zain,Todo,,0.2,P0,2,12/22/2025,12/22/2025,Test plan & setup environment; PIC: Lutfi Zain; DEPS: 0.2
 Q.2,Lutfi Zain Testing,Test: Login screen,Lutfi Zain,Todo,,R.2,P0,2,12/23/2025,12/23/2025,Test: Login screen; PIC: Lutfi Zain; DEPS: R.2
 Q.3,Lutfi Zain Testing,"Test: Home screen (search, filter)",Lutfi Zain,Todo,,R.3,P0,3,12/26/2025,12/26/2025,"Test: Home screen (search, filter); PIC: Lutfi Zain; DEPS: R.3"
-Q.4,Lutfi Zain Testing,"Test: Recipe detail (view, save)",Lutfi Zain,Todo,,R.4,P0,2,12/23/2025,12/23/2025,"Test: Recipe detail (view, save); PIC: Lutfi Zain; DEPS: R.4
-Q.5,Lutfi Zain Testing,"Test: My recipes (tabs, actions)",Lutfi Zain,Todo,,R.5,P0,2,12/25/2025,12/25/2025,"Test: My recipes (tabs, actions); PIC: Lutfi Zain; DEPS: R.5
+Q.4,Lutfi Zain Testing,"Test: Recipe detail (view, save)",Lutfi Zain,Todo,,R.4,P0,2,12/23/2025,12/23/2025,"Test: Recipe detail (view, save); PIC: Lutfi Zain; DEPS: R.4"
+Q.5,Lutfi Zain Testing,"Test: My recipes (tabs, actions)",Lutfi Zain,Todo,,R.5,P0,2,12/25/2025,12/25/2025,"Test: My recipes (tabs, actions); PIC: Lutfi Zain; DEPS: R.5"
 Q.6,Lutfi Zain Testing,Test: Saved recipes,Lutfi Zain,Todo,,R.6,P0,2,12/25/2025,12/25/2025,Test: Saved recipes; PIC: Lutfi Zain; DEPS: R.6
-Q.7,Lutfi Zain Testing,"Test: Create/edit (form, validation)",Lutfi Zain,Todo,,R.7,P0,4,12/24/2025,12/24/2025,"Test: Create/edit (form, validation); PIC: Lutfi Zain; DEPS: R.7
-Q.8,Lutfi Zain Testing,"Test: Profile (view, edit, logout)",Lutfi Zain,Todo,,R.8,P0,2,12/25/2025,12/25/2025,"Test: Profile (view, edit, logout); PIC: Lutfi Zain; DEPS: R.8
+Q.7,Lutfi Zain Testing,"Test: Create/edit (form, validation)",Lutfi Zain,Todo,,R.7,P0,4,12/24/2025,12/24/2025,"Test: Create/edit (form, validation); PIC: Lutfi Zain; DEPS: R.7"
+Q.8,Lutfi Zain Testing,"Test: Profile (view, edit, logout)",Lutfi Zain,Todo,,R.8,P0,2,12/25/2025,12/25/2025,"Test: Profile (view, edit, logout); PIC: Lutfi Zain; DEPS: R.8"
 Q.9,Lutfi Zain Testing,Test: Navigation flow end-to-end,Lutfi Zain,Todo,,Q.8,P0,2,12/26/2025,12/26/2025,Test: Navigation flow end-to-end; PIC: Lutfi Zain; DEPS: Q.8
 Q.10,Lutfi Zain Testing,Test: Data persistence,Lutfi Zain,Todo,,Q.9,P0,2,12/27/2025,12/27/2025,Test: Data persistence; PIC: Lutfi Zain; DEPS: Q.9
 Q.11,Lutfi Zain Testing,Bug reporting & retesting,Lutfi Zain,Todo,,Q.10,P1,4,12/28/2025,12/28/2025,Bug reporting & retesting; PIC: Lutfi Zain; DEPS: Q.10
