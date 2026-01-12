@@ -41,6 +41,21 @@ async function ensureRecipesColumns() {
   if (!(await columnExists("recipes", "creator_email"))) {
     await execSql(`ALTER TABLE recipes ADD COLUMN creator_email TEXT;`);
   }
+  if (!(await columnExists("recipes", "rating"))) {
+    await execSql(`ALTER TABLE recipes ADD COLUMN rating REAL;`);
+  }
+  if (!(await columnExists("recipes", "calories"))) {
+    await execSql(`ALTER TABLE recipes ADD COLUMN calories TEXT;`);
+  }
+  if (!(await columnExists("recipes", "ingredients"))) {
+    await execSql(`ALTER TABLE recipes ADD COLUMN ingredients TEXT;`);
+  }
+  if (!(await columnExists("recipes", "steps"))) {
+    await execSql(`ALTER TABLE recipes ADD COLUMN steps TEXT;`);
+  }
+  if (!(await columnExists("recipes", "image"))) {
+    await execSql(`ALTER TABLE recipes ADD COLUMN image TEXT;`);
+  }
 }
 
 async function seedRecipes() {

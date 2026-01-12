@@ -1,30 +1,30 @@
 ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est. Hours,Start Date,End Date,Final Info
-0,Project Setup,,Jumanta,Module Todo,,,P0,,12/19/2025,12/22/2025,; PIC: Jumanta
-0.1,Project Setup,Init RN project + dependencies,Jumanta,Done,Syahrul Ramadhan,,P0,2,12/19/2025,12/20/2025,Init RN project + dependencies; PIC: Jumanta; Done By: Syahrul Ramadhan
-0.2,Project Setup,"Navigation setup (Stack, Tab, Modal)",Jumanta,Done,Syahrul Ramadhan,0.1,P0,3,12/20/2025,12/21/2025,"Navigation setup (Stack, Tab, Modal); PIC: Jumanta; Done By: Syahrul Ramadhan; DEPS: 0.1"
-0.3,Project Setup,TypeScript types & interfaces,Jumanta,Done,Syahrul Ramadhan,0.1,P0,2,12/21/2025,12/22/2025,TypeScript types & interfaces; PIC: Jumanta; Done By: Syahrul Ramadhan; DEPS: 0.1
-0.4,Project Setup,SQLite database helpers + mock data,Jumanta,Todo,,0.1,P0,2,12/21/2025,12/22/2025,SQLite database helpers + mock data; PIC: Jumanta; DEPS: 0.1
-0.5,Project Setup,Git workflow & PR template,Jumanta,Todo,,0.1,P0,1,12/21/2025,12/22/2025,Git workflow & PR template; PIC: Jumanta; DEPS: 0.1
+0,Project Setup,,Syahrul Ramadhan,Module Todo,Syahrul Ramadhan,,P0,,12/19/2025,12/22/2025,; PIC: Syahrul Ramadhan; Done By: Syahrul Ramadhan
+0.1,Project Setup,Init RN project + dependencies,Syahrul Ramadhan,Done,Syahrul Ramadhan,,P0,2,12/19/2025,12/20/2025,Init RN project + dependencies; PIC: Syahrul Ramadhan; Done By: Syahrul Ramadhan
+0.2,Project Setup,"Navigation setup (Stack, Tab, Modal)",Syahrul Ramadhan,Done,Syahrul Ramadhan,0.1,P0,3,12/20/2025,12/21/2025,"Navigation setup (Stack, Tab, Modal); PIC: Syahrul Ramadhan; Done By: Syahrul Ramadhan; DEPS: 0.1"
+0.3,Project Setup,TypeScript types & interfaces,Syahrul Ramadhan,Done,Syahrul Ramadhan,0.1,P0,2,12/21/2025,12/22/2025,TypeScript types & interfaces; PIC: Syahrul Ramadhan; Done By: Syahrul Ramadhan; DEPS: 0.1
+0.4,Project Setup,SQLite database helpers + mock data,Syahrul Ramadhan,Done,Syahrul Ramadhan,0.1,P0,2,12/21/2025,12/22/2025,SQLite database helpers + mock data; PIC: Syahrul Ramadhan; Done By: Syahrul Ramadhan; DEPS: 0.1
+0.5,Project Setup,Git workflow & PR template,Syahrul Ramadhan,Done,Syahrul Ramadhan,0.1,P0,1,12/21/2025,12/22/2025,Git workflow & PR template; PIC: Syahrul Ramadhan; Done By: Syahrul Ramadhan; DEPS: 0.1
 1,Login Screen,,Syahrul Ramadhan,Module Todo,,,P0,,12/21/2025,12/23/2025,; PIC: Syahrul Ramadhan
 1.1,Login Screen,UI: form email & password,Syahrul Ramadhan,Done,,0.2,P0,2,12/21/2025,12/22/2025,UI: form email & password; PIC: Syahrul Ramadhan; DEPS: 0.2
 1.2,Login Screen,Logic: validate & save to storage (mock),Syahrul Ramadhan,Done,,"0.4, 1.1",P0,2,12/22/2025,12/23/2025,"Logic: validate & save to storage (mock); PIC: Syahrul Ramadhan; DEPS: 0.4, 1.1"
 1.3,Login Screen,Forgot password (mailto link),Syahrul Ramadhan,Done,,1.1,P1,1,12/22/2025,12/23/2025,Forgot password (mailto link); PIC: Syahrul Ramadhan; DEPS: 1.1
 2,Home Screen,,Zikri Firmansyah,Module Todo,,,P0,,12/22/2025,12/26/2025,; PIC: Zikri Firmansyah
-2.1,Home Screen,Recipe card component,Zikri Firmansyah,Done,Zikri Firmansyah,0.3,P0,3,12/22/2025,12/23/2025,Recipe card component; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 0.3
-2.2,Home Screen,Feed layout dengan FlatList,Zikri Firmansyah,Done,Zikri Firmansyah,2.1,P0,2,12/23/2025,12/24/2025,Feed layout dengan FlatList; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 2.1
-2.3,Home Screen,Search bar,Zikri Firmansyah,Done,Zikri Firmansyah,2.2,P1,2,12/24/2025,12/25/2025,Search bar; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 2.2
-2.4,Home Screen,Category filter chips,Zikri Firmansyah,Done,Zikri Firmansyah,2.2,P1,2,12/24/2025,12/25/2025,Category filter chips; PIC: Zikri Firmansyah; Done By: Zikri Firmansyah; DEPS: 2.2
-2.5,Home Screen,"Filter logic (search, category, privacy)",Zikri Firmansyah,Todo,,"2.3, 2.4",P1,3,12/25/2025,12/26/2025,"Filter logic (search, category, privacy); PIC: Zikri Firmansyah; DEPS: 2.3, 2.4"
+2.1,Home Screen,Recipe card component,Zikri Firmansyah,Done,,0.3,P0,3,12/22/2025,12/23/2025,Recipe card component; PIC: Zikri Firmansyah; DEPS: 0.3
+2.2,Home Screen,Feed layout dengan FlatList,Zikri Firmansyah,Done,,2.1,P0,2,12/23/2025,12/24/2025,Feed layout dengan FlatList; PIC: Zikri Firmansyah; DEPS: 2.1
+2.3,Home Screen,Search bar,Zikri Firmansyah,Done,,2.2,P1,2,12/24/2025,12/25/2025,Search bar; PIC: Zikri Firmansyah; DEPS: 2.2
+2.4,Home Screen,Category filter chips,Zikri Firmansyah,Done,,2.2,P1,2,12/24/2025,12/25/2025,Category filter chips; PIC: Zikri Firmansyah; DEPS: 2.2
+2.5,Home Screen,"Filter logic (search, category, privacy)",Zikri Firmansyah,Done,,"2.3, 2.4",P1,3,12/25/2025,12/26/2025,"Filter logic (search, category, privacy); PIC: Zikri Firmansyah; DEPS: 2.3, 2.4"
 3,Recipe Detail Screen,,Deni Hermawan,Module Todo,,,P0,,12/21/2025,12/23/2025,; PIC: Deni Hermawan
-3.1,Recipe Detail Screen,Layout: header dengan image & title,Deni Hermawan,Todo,,0.2,P0,2,12/21/2025,12/22/2025,Layout: header dengan image & title; PIC: Deni Hermawan; DEPS: 0.2
-3.2,Recipe Detail Screen,Ingredients section,Deni Hermawan,Todo,,3.1,P0,2,12/22/2025,12/23/2025,Ingredients section; PIC: Deni Hermawan; DEPS: 3.1
-3.3,Recipe Detail Screen,Steps section (numbered),Deni Hermawan,Todo,,3.1,P0,2,12/22/2025,12/23/2025,Steps section (numbered); PIC: Deni Hermawan; DEPS: 3.1
-3.4,Recipe Detail Screen,Save/unsave button + logic,Deni Hermawan,Todo,,"0.4, 3.1",P0,2,12/22/2025,12/23/2025,"Save/unsave button + logic; PIC: Deni Hermawan; DEPS: 0.4, 3.1"
+3.1,Recipe Detail Screen,Layout: header dengan image & title,Deni Hermawan,Done,,0.2,P0,2,12/21/2025,12/22/2025,Layout: header dengan image & title; PIC: Deni Hermawan; DEPS: 0.2
+3.2,Recipe Detail Screen,Ingredients section,Deni Hermawan,Done,,3.1,P0,2,12/22/2025,12/23/2025,Ingredients section; PIC: Deni Hermawan; DEPS: 3.1
+3.3,Recipe Detail Screen,Steps section (numbered),Deni Hermawan,Done,,3.1,P0,2,12/22/2025,12/23/2025,Steps section (numbered); PIC: Deni Hermawan; DEPS: 3.1
+3.4,Recipe Detail Screen,Save/unsave button + logic,Deni Hermawan,Request Change,,"0.4, 3.1",P0,2,12/22/2025,12/23/2025,"Save/unsave button + logic; PIC: Deni Hermawan; DEPS: 0.4, 3.1"
 4,My Recipes Screen,,Vointra Namara Fidelito,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Vointra Namara Fidelito
-4.1,My Recipes Screen,Layout dengan tabs (Published/Draft),Vointra Namara Fidelito,Todo,,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan tabs (Published/Draft); PIC: Vointra Namara Fidelito; DEPS: 2.1
-4.2,My Recipes Screen,Filter recipes by authorId,Vointra Namara Fidelito,Todo,,"0.4, 4.1",P0,2,12/24/2025,12/25/2025,"Filter recipes by authorId; PIC: Vointra Namara Fidelito; DEPS: 0.4, 4.1"
-4.3,My Recipes Screen,Empty state component,Vointra Namara Fidelito,Todo,,4.1,P1,2,12/24/2025,12/25/2025,Empty state component; PIC: Vointra Namara Fidelito; DEPS: 4.1
-4.4,My Recipes Screen,Edit & delete actions,Vointra Namara Fidelito,Todo,,4.1,P1,2,12/24/2025,12/25/2025,Edit & delete actions; PIC: Vointra Namara Fidelito; DEPS: 4.1
+4.1,My Recipes Screen,Layout dengan tabs (Published/Draft),Vointra Namara Fidelito,Done,Vointra Namara Fidelito,2.1,P0,2,12/23/2025,12/24/2025,"Layout dengan tabs (Published/Draft); PIC: Vointra Namara Fidelito; Done By: Vointra Namara Fidelito; DEPS: 2.1; Review Date: 2026-01-12"
+4.2,My Recipes Screen,Filter recipes by authorId,Vointra Namara Fidelito,Done,Vointra Namara Fidelito,"0.4, 4.1",P0,2,12/24/2025,12/25/2025,"Filter recipes by authorId; PIC: Vointra Namara Fidelito; Done By: Vointra Namara Fidelito; DEPS: 0.4, 4.1; Review Date: 2026-01-12; Note: Uses creator_email (existing DB schema) - IA spec discrepancy is pre-existing technical debt"
+4.3,My Recipes Screen,Empty state component,Vointra Namara Fidelito,Done,Vointra Namara Fidelito,4.1,P1,2,12/24/2025,12/25/2025,"Empty state component; PIC: Vointra Namara Fidelito; Done By: Vointra Namara Fidelito; DEPS: 4.1; Review Date: 2026-01-12"
+4.4,My Recipes Screen,Edit & delete actions,Vointra Namara Fidelito,Done,Vointra Namara Fidelito,4.1,P1,2,12/24/2025,12/25/2025,"Edit & delete actions; PIC: Vointra Namara Fidelito; Done By: Vointra Namara Fidelito; DEPS: 4.1; Review Date: 2026-01-12"
 5,Saved Recipes Screen,,Muhammad Syahid Azhar Azizi,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Muhammad Syahid Azhar Azizi
 5.1,Saved Recipes Screen,Layout dengan FlatList,Muhammad Syahid Azhar Azizi,Todo,,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan FlatList; PIC: Muhammad Syahid Azhar Azizi; DEPS: 2.1
 5.2,Saved Recipes Screen,Filter by savedRecipeIds,Muhammad Syahid Azhar Azizi,Todo,,"0.4, 5.1",P0,2,12/24/2025,12/25/2025,"Filter by savedRecipeIds; PIC: Muhammad Syahid Azhar Azizi; DEPS: 0.4, 5.1"
@@ -37,16 +37,16 @@ ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est.
 6.5,Create/Edit Recipe Screen,Dynamic steps (add/remove),Dyo Aristo,Todo,,6.1,P0,3,12/23/2025,12/24/2025,Dynamic steps (add/remove); PIC: Dyo Aristo; DEPS: 6.1
 6.6,Create/Edit Recipe Screen,Privacy toggle (Switch),Dyo Aristo,Todo,,6.1,P0,1,12/23/2025,12/24/2025,Privacy toggle (Switch); PIC: Dyo Aristo; DEPS: 6.1
 6.7,Create/Edit Recipe Screen,Save logic (Draft/Published),Dyo Aristo,Todo,,"0.4, 6.1",P0,2,12/23/2025,12/24/2025,"Save logic (Draft/Published); PIC: Dyo Aristo; DEPS: 0.4, 6.1"
-7,Profile Screen,,Syahrul Ramadhan,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Syahrul Ramadhan
-7.1,Profile Screen,"UI: avatar, name, bio display",Syahrul Ramadhan,Todo,,"0.3, 1.2",P0,2,12/23/2025,12/24/2025,"UI: avatar, name, bio display; PIC: Syahrul Ramadhan; DEPS: 0.3, 1.2"
-7.2,Profile Screen,Edit profile form,Syahrul Ramadhan,Todo,,7.1,P1,3,12/24/2025,12/25/2025,Edit profile form; PIC: Syahrul Ramadhan; DEPS: 7.1
-7.3,Profile Screen,Logout button + logic,Syahrul Ramadhan,Todo,,"0.4, 7.1",P0,1,12/24/2025,12/25/2025,"Logout button + logic; PIC: Syahrul Ramadhan; DEPS: 0.4, 7.1"
+7,Profile Screen,,Jumanta,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Jumanta
+7.1,Profile Screen,"UI: avatar, name, bio display",Jumanta,Done,,"0.3, 1.2",P0,2,12/23/2025,12/24/2025,"UI: avatar, name, bio display; PIC: Jumanta; DEPS: 0.3, 1.2"
+7.2,Profile Screen,Edit profile form,Jumanta,Done,,7.1,P1,3,12/24/2025,12/25/2025,Edit profile form; PIC: Jumanta; DEPS: 7.1
+7.3,Profile Screen,Logout button + logic,Jumanta,Done,Lutfi Zain,"0.4, 7.1",P0,1,12/24/2025,12/25/2025,"Logout button + logic; PIC: Jumanta; Done By: Lutfi Zain; DEPS: 0.4, 7.1"
 R,Code Review,,R. Purba Kusuma,Module Todo,,,P0,,12/22/2025,12/26/2025,; PIC: R. Purba Kusuma
 R.1,Code Review,Review: Setup & types,R. Purba Kusuma,Todo,,0.5,P0,1,12/22/2025,12/22/2025,Review: Setup & types; PIC: R. Purba Kusuma; DEPS: 0.5
 R.2,Code Review,Review: Login screen,R. Purba Kusuma,Todo,,1.3,P0,1,12/23/2025,12/23/2025,Review: Login screen; PIC: R. Purba Kusuma; DEPS: 1.3
 R.3,Code Review,Review: Home screen,R. Purba Kusuma,Todo,,2.5,P0,2,12/26/2025,12/26/2025,Review: Home screen; PIC: R. Purba Kusuma; DEPS: 2.5
 R.4,Code Review,Review: Recipe detail,R. Purba Kusuma,Todo,,3.4,P0,1,12/23/2025,12/23/2025,Review: Recipe detail; PIC: R. Purba Kusuma; DEPS: 3.4
-R.5,Code Review,Review: My recipes,R. Purba Kusuma,Todo,,4.4,P0,1,12/25/2025,12/25/2025,Review: My recipes; PIC: R. Purba Kusuma; DEPS: 4.4
+R.5,Code Review,Review: My recipes,R. Purba Kusuma,Done,R. Purba Kusuma,4.4,P0,1,12/25/2025,01/12/2026,Review: My recipes; PIC: R. Purba Kusuma; Done By: R. Purba Kusuma; DEPS: 4.4
 R.6,Code Review,Review: Saved recipes,R. Purba Kusuma,Todo,,5.3,P0,1,12/25/2025,12/25/2025,Review: Saved recipes; PIC: R. Purba Kusuma; DEPS: 5.3
 R.7,Code Review,Review: Create/edit recipe,R. Purba Kusuma,Todo,,6.7,P0,2,12/24/2025,12/24/2025,Review: Create/edit recipe; PIC: R. Purba Kusuma; DEPS: 6.7
 R.8,Code Review,Review: Profile screen,R. Purba Kusuma,Todo,,7.3,P0,1,12/25/2025,12/25/2025,Review: Profile screen; PIC: R. Purba Kusuma; DEPS: 7.3
