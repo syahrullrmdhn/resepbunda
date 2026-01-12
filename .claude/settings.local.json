@@ -17,7 +17,8 @@
       "Bash(taskkill:*)",
       "Bash(tasklist:*)",
       "Bash(cmd.exe /c \"taskkill /F /PID 5920\")",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(cut:*)"
     ]
   }
 }
