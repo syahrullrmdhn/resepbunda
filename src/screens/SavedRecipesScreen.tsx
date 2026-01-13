@@ -1,17 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, Platform, StatusBar, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Platform, StatusBar, TouchableOpacity, TextInput, ActivityIndicator, Image, Alert } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 
 // --- DEPENDENCIES ---
 import { theme } from '../theme';
-import RecipeCard from '../components/RecipeCard';
 import { useAuth } from '../providers/AuthProvider';
 import { Recipe } from '../types/recipe';
-import { querySql } from '../services/db'; 
-
-// --- IMPORT BIBIT DATA ---
-import { recipes as SEED_DATA } from '../services/db/seeds/recipes'; 
+import { querySql, execSql } from '../services/db'; 
 
 const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 44;
 
@@ -25,39 +21,37 @@ const SavedRecipesScreen = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState('');
 
-  // --- LOGIC PINTAR: CEK & ISI OTOMATIS ---
-  const fetchAndEnsureData = async () => {
+  // --- LOGIC DATABASE MURNI ---
+  const fetchSavedData = async () => {
     try {
       setLoading(true);
-      
-      // 1. Cek isi database sekarang
-      let result = await querySql<Recipe>('SELECT * FROM recipes ORDER BY id DESC');
-      
-      // 2. LOGIC IF KOSONG -> ISI OTOMATIS (SEEDING)
-      if (result.length === 0) {
-        console.log('Database kosong. Melakukan Auto-Seeding...');
-        
-        for (const r of SEED_DATA) {
-          await querySql(
-            `INSERT INTO recipes (title, description, creator, creatorType, cookingTime, category, isPrivate, rating, calories, ingredients, steps) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              r.title, r.description, r.creator, r.creatorType, r.cookingTime, r.category,
-              r.isPrivate ? 1 : 0, r.rating, r.calories,
-              JSON.stringify(r.ingredients), JSON.stringify(r.steps)
-            ]
-          );
-        }
-        
-        // 3. Ambil ulang data setelah diisi
-        result = await querySql<Recipe>('SELECT * FROM recipes ORDER BY id DESC');
-      }
 
+      // 1. Pastikan TABELNYA ada (Schema Only), tapi JANGAN ISI DATA.
+      await execSql(`
+        CREATE TABLE IF NOT EXISTS saved_recipes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_email TEXT NOT NULL,
+          recipe_id INTEGER NOT NULL,
+          created_at TEXT NOT NULL,
+          UNIQUE(user_email, recipe_id)
+        );
+      `);
+
+      // 2. Query Real (JOIN)
+      // Hanya ambil data yang bener-bener ada di tabel saved_recipes
+      const result = await querySql<Recipe>(
+        `SELECT r.* 
+         FROM recipes r 
+         JOIN saved_recipes s ON r.id = s.recipe_id 
+         ORDER BY s.created_at DESC`
+      );
+      
+      console.log('Saved data fetched:', result.length);
       setAllData(result);
       setDisplayedData(result);
       
     } catch (error) {
-      console.error("Error database:", error);
+      console.error("Error fetching saved data:", error);
     } finally {
       setLoading(false);
     }
@@ -65,9 +59,34 @@ const SavedRecipesScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchAndEnsureData();
-    }, [])
+      fetchSavedData();
+    }, [session])
   );
+
+  // LOGIC HAPUS (AKTIFKAN SQL DELETE)
+  const handleRemove = async (id: number) => {
+    Alert.alert("Hapus", "Yakin hapus dari koleksi?", [
+      { text: "Batal", style: "cancel" },
+      { 
+        text: "Hapus", 
+        style: "destructive", 
+        onPress: async () => {
+          try {
+            // 1. Eksekusi Hapus dari Database Real
+            await execSql('DELETE FROM saved_recipes WHERE recipe_id = ?', [id]);
+            
+            // 2. Update UI
+            const newData = allData.filter(item => item.id !== id);
+            setAllData(newData);
+            setDisplayedData(newData);
+          } catch (e) {
+            console.error("Gagal hapus:", e);
+            Alert.alert("Error", "Gagal menghapus data dari database.");
+          }
+        }
+      }
+    ]);
+  };
 
   // SEARCH LOGIC
   const handleSearch = (text: string) => {
@@ -94,16 +113,12 @@ const SavedRecipesScreen = () => {
 
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyEmoji}>
-        {searchText ? '🔍' : '🍳'}
-      </Text>
-      <Text style={styles.emptyTitle}>
-        {searchText ? 'Tidak Ditemukan' : 'Belum Ada Data'}
-      </Text>
+      <Text style={styles.emptyEmoji}>🍳</Text>
+      <Text style={styles.emptyTitle}>{searchText ? 'Tidak Ditemukan' : 'Belum Ada Simpanan'}</Text>
       <Text style={styles.emptySub}>
         {searchText 
-          ? `Tidak ada resep dengan kata kunci "${searchText}"`
-          : 'Data resep belum tersedia.'}
+          ? `Tidak ada hasil untuk "${searchText}"` 
+          : 'Simpan resep dulu dari halaman Beranda.'}
       </Text>
     </View>
   );
@@ -148,18 +163,69 @@ const SavedRecipesScreen = () => {
         <FlatList
           data={displayedData}
           keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={[
-            styles.listContent,
-            displayedData.length === 0 && { flex: 1 } 
-          ]}
+          contentContainerStyle={[styles.listContent, displayedData.length === 0 && { flex: 1 }]}
           ListEmptyComponent={renderEmptyState}
           renderItem={({ item }) => (
-            <View style={styles.cardWrapper}>
-              <RecipeCard 
-                recipe={item} 
-                onPress={() => router.push(`/recipe/${item.id}`)}
+            // --- CUSTOM CARD: HORIZONTAL LAYOUT (SESUAI GUIDELINE) ---
+            <TouchableOpacity 
+              style={styles.card} 
+              activeOpacity={0.9}
+              onPress={() => router.push(`/recipe/${item.id}`)}
+            >
+              {/* GAMBAR KIRI */}
+              <Image 
+                source={{ uri: item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop' }} 
+                style={styles.cardImage} 
               />
-            </View>
+
+              {/* KONTEN KANAN */}
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
+                
+                {/* Creator */}
+                <View style={styles.metaRow}>
+                  <Ionicons name="person-outline" size={12} color="#64748b" />
+                  <Text style={styles.metaText}>
+                    Oleh <Text style={{fontFamily: theme.font.medium, color: '#334155'}}>{item.creator}</Text>
+                  </Text>
+                </View>
+
+                {/* Badge Kuning Favorit */}
+                <View style={styles.statusRow}>
+                  <Text style={styles.savedAtText}>Tersimpan</Text>
+                  <View style={styles.dot} />
+                  <View style={styles.badgeYellow}>
+                    <Text style={styles.badgeText}>Favorit</Text>
+                  </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View style={styles.actionRow}>
+                  <View style={{flexDirection:'row', alignItems:'center', gap:4}}>
+                    <Ionicons name="time-outline" size={14} color="#64748b" />
+                    <Text style={styles.metaText}>{item.cookingTime}</Text>
+                  </View>
+
+                  <View style={{flexDirection:'row', gap:8}}>
+                    {/* View */}
+                    <TouchableOpacity 
+                      style={styles.circleBtn} 
+                      onPress={() => router.push(`/recipe/${item.id}`)}
+                    >
+                       <Ionicons name="eye-outline" size={16} color="#64748b" />
+                    </TouchableOpacity>
+                    
+                    {/* Delete (Real SQL Delete) */}
+                    <TouchableOpacity 
+                      style={[styles.circleBtn, { backgroundColor: '#fee2e2' }]} 
+                      onPress={() => handleRemove(item.id)}
+                    >
+                       <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
           )}
         />
       )}
@@ -167,101 +233,49 @@ const SavedRecipesScreen = () => {
   );
 };
 
-// --- STYLING (ANY MODE: ON) ---
+// --- STYLE FINAL (ANY MODE ON) ---
 const styles: any = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fafc', 
-  },
+  container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    paddingTop: STATUSBAR_HEIGHT + 10, 
-    paddingBottom: 24,
-    paddingHorizontal: 20,
-    height: 110, 
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
+    paddingTop: STATUSBAR_HEIGHT + 10, paddingBottom: 24, paddingHorizontal: 20, height: 110,
   },
-  headerLeft: {
-    flex: 1,
-    paddingRight: 10,
-    justifyContent: 'center',
+  headerLeft: { flex: 1, paddingRight: 10, justifyContent: 'center' },
+  headerTitle: { fontSize: 28, fontFamily: theme.font.bold, fontWeight: 'bold', color: theme.colors.neutral.dark, marginBottom: 0, letterSpacing: -0.5, lineHeight: 34 },
+  headerSub: { fontSize: 13, fontFamily: theme.font.medium, fontWeight: '500', color: theme.colors.neutral.medium, marginTop: 2 },
+  searchButton: { padding: 5, justifyContent: 'center', alignItems: 'center' },
+  searchBarContainer: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: 12, paddingHorizontal: 12, height: 44 },
+  searchInput: { flex: 1, fontFamily: theme.font.medium, fontSize: 14, color: theme.colors.neutral.dark, height: '100%' },
+  
+  // CONTENT
+  listContent: { padding: 20, paddingBottom: 100 },
+  
+  // CUSTOM CARD STYLE (SESUAI GUIDELINE HTML)
+  card: {
+    flexDirection: 'row', backgroundColor: '#fff', borderRadius: 16, padding: 12, marginBottom: 16, gap: 12,
+    borderWidth: 1, borderColor: '#e2e8f0',
+    shadowColor: '#000', shadowOffset: {width:0, height:2}, shadowOpacity:0.05, shadowRadius:4, elevation:2
   },
-  headerTitle: {
-    fontSize: 28,
-    fontFamily: theme.font.bold,
-    fontWeight: 'bold',
-    color: theme.colors.neutral.dark,
-    marginBottom: 0, 
-    letterSpacing: -0.5,
-    lineHeight: 34,
-  },
-  headerSub: {
-    fontSize: 13,
-    fontFamily: theme.font.medium,
-    fontWeight: '500',
-    color: theme.colors.neutral.medium,
-    marginTop: 2, 
-  },
-  searchButton: {
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  searchBarContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f1f5f9',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 44,
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: theme.font.medium,
-    fontSize: 14,
-    color: theme.colors.neutral.dark,
-    height: '100%',
-  },
-  listContent: {
-    padding: 20,
-    paddingBottom: 100,
-  },
-  cardWrapper: {
-    marginBottom: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    paddingBottom: 50, 
-  },
-  emptyEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontFamily: theme.font.bold,
-    fontWeight: 'bold',
-    color: theme.colors.neutral.dark,
-  },
-  emptySub: {
-    fontSize: 14,
-    color: theme.colors.neutral.medium,
-    marginTop: 4,
-    textAlign: 'center',
-    paddingHorizontal: 40,
-  },
+  cardImage: { width: 85, height: 85, borderRadius: 10, backgroundColor: '#eee' },
+  cardContent: { flex: 1, justifyContent: 'center' },
+  cardTitle: { fontSize: 16, fontFamily: theme.font.bold, fontWeight: 'bold', color: '#0f172a', marginBottom: 4 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
+  metaText: { fontSize: 12, color: '#64748b', fontFamily: theme.font.medium },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  savedAtText: { fontSize: 11, color: '#64748b' },
+  dot: { width: 3, height: 3, borderRadius: 2, backgroundColor: '#cbd5e1' },
+  badgeYellow: { backgroundColor: '#fefce8', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  badgeText: { fontSize: 10, fontFamily: theme.font.bold, fontWeight: 'bold', color: '#ca8a04' },
+  actionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  circleBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+
+  // EMPTY STATE
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 50 },
+  emptyEmoji: { fontSize: 64, marginBottom: 16 },
+  emptyTitle: { fontSize: 18, fontFamily: theme.font.bold, fontWeight: 'bold', color: theme.colors.neutral.dark },
+  emptySub: { fontSize: 14, color: theme.colors.neutral.medium, marginTop: 4, textAlign: 'center', paddingHorizontal: 40 },
 });
 
 export default SavedRecipesScreen;
