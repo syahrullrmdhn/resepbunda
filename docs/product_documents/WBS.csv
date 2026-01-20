@@ -26,9 +26,9 @@ ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est.
 4.3,My Recipes Screen,Empty state component,Vointra Namara Fidelito,Done,,4.1,P1,2,12/24/2025,12/25/2025,Empty state component; PIC: Vointra Namara Fidelito; DEPS: 4.1
 4.4,My Recipes Screen,Edit & delete actions,Vointra Namara Fidelito,Done,,4.1,P1,2,12/24/2025,12/25/2025,Edit & delete actions; PIC: Vointra Namara Fidelito; DEPS: 4.1
 5,Saved Recipes Screen,,Muhammad Syahid Azhar Azizi,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Muhammad Syahid Azhar Azizi
-5.1,Saved Recipes Screen,Layout dengan FlatList,Muhammad Syahid Azhar Azizi,Todo,,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan FlatList; PIC: Muhammad Syahid Azhar Azizi; DEPS: 2.1
-5.2,Saved Recipes Screen,Filter by savedRecipeIds,Muhammad Syahid Azhar Azizi,Todo,,"0.4, 5.1",P0,2,12/24/2025,12/25/2025,"Filter by savedRecipeIds; PIC: Muhammad Syahid Azhar Azizi; DEPS: 0.4, 5.1"
-5.3,Saved Recipes Screen,Empty state (belum ada saved),Muhammad Syahid Azhar Azizi,Todo,,5.1,P1,1,12/24/2025,12/25/2025,Empty state (belum ada saved); PIC: Muhammad Syahid Azhar Azizi; DEPS: 5.1
+5.1,Saved Recipes Screen,Layout dengan FlatList,Muhammad Syahid Azhar Azizi,Done,Muhammad Syahid Azhar Azizi,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan FlatList; PIC: Muhammad Syahid Azhar Azizi; DEPS: 2.1
+5.2,Saved Recipes Screen,Filter by savedRecipeIds,Muhammad Syahid Azhar Azizi,Done,Muhammad Syahid Azhar Azizi,"0.4, 5.1",P0,2,12/24/2025,12/25/2025,"Filter by savedRecipeIds; PIC: Muhammad Syahid Azhar Azizi; DEPS: 0.4, 5.1"
+5.3,Saved Recipes Screen,Empty state (belum ada saved),Muhammad Syahid Azhar Azizi,Done,Muhammad Syahid Azhar Azizi,5.1,P1,1,12/24/2025,12/25/2025,Empty state (belum ada saved); PIC: Muhammad Syahid Azhar Azizi; DEPS: 5.1
 6,Create/Edit Recipe Screen,,Dyo Aristo,Module Todo,,,P0,,12/22/2025,12/24/2025,; PIC: Dyo Aristo
 6.1,Create/Edit Recipe Screen,"Form UI: title, description, category",Dyo Aristo,Todo,,0.3,P0,3,12/22/2025,12/23/2025,"Form UI: title, description, category; PIC: Dyo Aristo; DEPS: 0.3"
 6.2,Create/Edit Recipe Screen,Time & difficulty inputs,Dyo Aristo,Todo,,6.1,P0,2,12/23/2025,12/24/2025,Time & difficulty inputs; PIC: Dyo Aristo; DEPS: 6.1
@@ -47,7 +47,7 @@ R.2,Code Review,Review: Login screen,R. Purba Kusuma,Done,,1.3,P0,1,12/23/2025,1
 R.3,Code Review,Review: Home screen,R. Purba Kusuma,Done,,2.5,P0,2,12/26/2025,12/26/2025,Review: Home screen; PIC: R. Purba Kusuma; DEPS: 2.5
 R.4,Code Review,Review: Recipe detail,R. Purba Kusuma,Done,,3.4,P0,1,12/23/2025,12/23/2025,Review: Recipe detail; PIC: R. Purba Kusuma; DEPS: 3.4
 R.5,Code Review,Review: My recipes,R. Purba Kusuma,Done,,4.4,P0,1,12/25/2025,12/25/2025,Review: My recipes; PIC: R. Purba Kusuma; DEPS: 4.4
-R.6,Code Review,Review: Saved recipes,R. Purba Kusuma,Blocked,,5.3,P0,1,12/25/2025,12/25/2025,Review: Saved recipes; PIC: R. Purba Kusuma; DEPS: 5.3
+R.6,Code Review,Review: Saved recipes,R. Purba Kusuma,Done,R. Purba Kusuma,5.3,P0,1,12/25/2025,1/20/2026,Review: Saved recipes; PIC: R. Purba Kusuma; Done By: R. Purba Kusuma; DEPS: 5.3
 R.7,Code Review,Review: Create/edit recipe,R. Purba Kusuma,Blocked,,6.7,P0,2,12/24/2025,12/24/2025,Review: Create/edit recipe; PIC: R. Purba Kusuma; DEPS: 6.7
 R.8,Code Review,Review: Profile screen,R. Purba Kusuma,Done,,7.3,P0,1,12/25/2025,12/25/2025,Review: Profile screen; PIC: R. Purba Kusuma; DEPS: 7.3
 R.9,Code Review,Final integration review,R. Purba Kusuma,Blocked,,All reviews,P1,2,12/25/2025,12/25/2025,Final integration review; PIC: R. Purba Kusuma; DEPS: All reviews
