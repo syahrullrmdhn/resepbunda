@@ -1,24 +1,52 @@
-import { useFocusEffect } from "@react-navigation/native";
-import { router } from "expo-router";
-import { ChefHat, Clock, Edit, Filter, Plus, Trash2 } from "lucide-react-native";
+import { router, useFocusEffect } from "expo-router";
+
+import {
+  ChefHat,
+  Clock,
+  Edit3,
+  Filter,
+  Plus,
+  Search,
+  Trash2,
+  Utensils,
+  X,
+} from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   Image,
   Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+// --- DEPENDENCIES ---
 import { CATEGORIES, getCategoryLabel } from "../../src/constants/categories";
-import { querySql } from "../../src/services/db";
-import { theme } from "../../src/theme";
+import { execSql, querySql } from "../../src/services/db";
+import { theme } from "../../src/theme"; // Mengambil font Mulish dari sini
 import type { Recipe } from "../../src/types/recipe";
 
+// --- COLORS PALETTE ---
+const COLORS = {
+  bg: "#F8FAFC",
+  surface: "#FFFFFF",
+  border: "#E2E8F0",
+  textMain: "#0F172A",
+  textSec: "#64748B",
+  primary: theme.colors.primary.DEFAULT || "#059669",
+  danger: "#EF4444",
+  inputBg: "#F1F5F9",
+};
+
+// --- COMPONENT: RECIPE CARD ---
 interface MyRecipeCardProps {
   recipe: Recipe;
   onPress: () => void;
@@ -26,131 +54,152 @@ interface MyRecipeCardProps {
   onDelete: () => void;
 }
 
-const MyRecipeCard: React.FC<MyRecipeCardProps> = ({ recipe, onPress, onEdit, onDelete }) => {
+const MyRecipeCard: React.FC<MyRecipeCardProps> = ({
+  recipe,
+  onPress,
+  onEdit,
+  onDelete,
+}) => {
   return (
-    <TouchableOpacity
-      style={styles.cardContainer}
-      onPress={onPress}
-      activeOpacity={0.98}
-    >
-      {/* Image Thumbnail */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: recipe.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop' }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
+      <Image
+        source={{
+          uri:
+            recipe.image ||
+            "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",
+        }}
+        style={styles.cardImage}
+        resizeMode="cover"
+      />
 
-      {/* Content */}
-      <View style={styles.content}>
-        {/* Title */}
-        <Text style={styles.title} numberOfLines={1}>
-          {recipe.title || 'Untitled'}
+      <View style={styles.cardContent}>
+        {/* Header: Badge & Status */}
+        <View style={styles.cardHeaderRow}>
+          <View style={styles.badgeContainer}>
+            <Text style={styles.categoryBadge}>
+              {getCategoryLabel
+                ? getCategoryLabel(recipe.category)
+                : recipe.category}
+            </Text>
+          </View>
+          {recipe.isPrivate === 1 && (
+            <View style={styles.draftBadge}>
+              <Text style={styles.draftText}>DRAFT</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Title & Desc */}
+        <Text style={styles.cardTitle} numberOfLines={1}>
+          {recipe.title || "Tanpa Judul"}
         </Text>
 
-        {/* Description */}
-        <Text style={styles.description} numberOfLines={2}>
-          {recipe.description || 'Tidak ada deskripsi'}
+        <Text style={styles.cardDesc} numberOfLines={2}>
+          {recipe.description || "Tidak ada deskripsi singkat."}
         </Text>
 
-        {/* Author */}
-        <Text style={styles.author}>
-          Oleh {recipe.creator || 'Anonymous'}
-        </Text>
-
-        {/* Footer: Time & Category */}
-        <View style={styles.footer}>
-          <View style={styles.timeContainer}>
-            <Clock size={14} color={theme.colors.neutral.medium} />
-            <Text style={styles.timeText}>{recipe.cookingTime || '- mnt'}</Text>
+        {/* Footer: Meta & Actions */}
+        <View style={styles.cardFooter}>
+          <View style={styles.metaRow}>
+            <Clock size={14} color={COLORS.textSec} />
+            <Text style={styles.metaText}>
+              {recipe.cookingTime || "15 mnt"}
+            </Text>
           </View>
 
-          <View style={styles.dot} />
-
-          <Text style={styles.category}>{getCategoryLabel(recipe.category)}</Text>
+          <View style={styles.actionRow}>
+            <TouchableOpacity style={styles.iconBtn} onPress={onEdit}>
+              <Edit3 size={16} color={COLORS.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.iconBtn, styles.iconBtnDanger]}
+              onPress={onDelete}
+            >
+              <Trash2 size={16} color={COLORS.danger} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-
-      {/* Actions */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={onEdit}
-          activeOpacity={0.7}
-        >
-          <Edit size={16} color={theme.colors.primary.DEFAULT} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={onDelete}
-          activeOpacity={0.7}
-        >
-          <Trash2 size={16} color={theme.colors.danger.DEFAULT} />
-        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 };
 
+// --- MAIN SCREEN ---
 export default function MyRecipesScreen() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'published' | 'draft'>('published');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // States Filter & Tab
+  const [activeTab, setActiveTab] = useState<"published" | "draft">(
+    "published",
+  );
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showFilterModal, setShowFilterModal] = useState(false);
 
+  // 1. Fetch Data
   const fetchMyRecipes = async () => {
     try {
       setIsLoading(true);
       const session = await querySql<{ email: string }>(
-        "SELECT email FROM session WHERE id = 1"
+        "SELECT email FROM session WHERE id = 1",
       );
 
       if (session.length > 0 && session[0].email) {
         const userEmail = session[0].email;
         const result = await querySql<Recipe>(
           "SELECT * FROM recipes WHERE creator_email = ? ORDER BY id DESC",
-          [userEmail]
+          [userEmail],
         );
         setRecipes(result);
       } else {
         setRecipes([]);
       }
     } catch (e) {
-      console.error("Error fetching my recipes:", e);
+      console.error("Error fetching recipes:", e);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filterRecipes = useCallback(() => {
-    let filtered = recipes;
+  // 2. Logic Filter
+  const applyFilters = useCallback(() => {
+    let result = recipes;
 
-    // Filter by tab (published/draft)
-    if (activeTab === 'published') {
-      filtered = filtered.filter(recipe => recipe.isPrivate === 0);
+    // Filter Tab
+    if (activeTab === "published") {
+      result = result.filter((r) => r.isPrivate === 0);
     } else {
-      filtered = filtered.filter(recipe => recipe.isPrivate === 1);
+      result = result.filter((r) => r.isPrivate === 1);
     }
 
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(recipe => recipe.category === selectedCategory);
+    // Filter Kategori
+    if (selectedCategory !== "all") {
+      result = result.filter((r) => r.category === selectedCategory);
     }
 
-    setFilteredRecipes(filtered);
-  }, [recipes, activeTab, selectedCategory]);
+    // Filter Search
+    if (searchQuery) {
+      const lowerQ = searchQuery.toLowerCase();
+      result = result.filter((r) => r.title.toLowerCase().includes(lowerQ));
+    }
 
-  const handleEditRecipe = (recipe: Recipe) => {
-    router.push(`/create-form?id=${recipe.id}`);
+    setFilteredRecipes(result);
+  }, [recipes, activeTab, selectedCategory, searchQuery]);
+
+  // --- ACTIONS ---
+
+  // [FIX NAVIGATION] Edit: Ke edit-recipe page
+  const handleEdit = (recipe: Recipe) => {
+    router.push(`/edit-recipe?id=${recipe.id}`);
   };
 
-  const handleDeleteRecipe = (recipe: Recipe) => {
+  // Handle Delete
+  const handleDelete = (recipe: Recipe) => {
     Alert.alert(
       "Hapus Resep",
-      `Apakah Anda yakin ingin menghapus "${recipe.title}"?`,
+      `Yakin ingin menghapus resep "${recipe.title}"?`,
       [
         { text: "Batal", style: "cancel" },
         {
@@ -158,143 +207,205 @@ export default function MyRecipesScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              await querySql("DELETE FROM recipes WHERE id = ?", [recipe.id]);
-              await fetchMyRecipes();
+              await execSql("DELETE FROM recipes WHERE id = ?", [recipe.id]);
+              fetchMyRecipes();
             } catch (e) {
-              console.error("Error deleting recipe:", e);
-              Alert.alert("Error", "Gagal menghapus resep");
+              Alert.alert("Error", "Gagal menghapus data.");
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
 
   useFocusEffect(
     useCallback(() => {
       fetchMyRecipes();
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
-    filterRecipes();
-  }, [recipes, activeTab, selectedCategory, filterRecipes]);
+    applyFilters();
+  }, [applyFilters]);
 
+  // --- RENDER ---
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Recipes</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setShowFilterModal(true)}
-            activeOpacity={0.8}
+        <View>
+          <Text style={styles.headerTitle}>Koleksi Saya</Text>
+          <Text style={styles.headerSubtitle}>Kelola resep buatanmu</Text>
+        </View>
+
+        {/* [FIX NAVIGATION] Tombol Buat Baru: Ke create-form (tanpa ID) */}
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => router.push("/create-form")}
+          activeOpacity={0.8}
+        >
+          <Plus size={20} color="#FFF" />
+          <Text style={styles.createButtonText}>Buat Baru</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* TOOLBAR */}
+      <View style={styles.toolbar}>
+        <View style={styles.searchBar}>
+          <Search size={18} color={COLORS.textSec} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Cari resep saya..."
+            placeholderTextColor={COLORS.textSec}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <X size={16} color={COLORS.textSec} />
+            </TouchableOpacity>
+          )}
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.filterBtn,
+            selectedCategory !== "all" && styles.filterBtnActive,
+          ]}
+          onPress={() => setShowFilterModal(true)}
+        >
+          <Filter
+            size={20}
+            color={selectedCategory !== "all" ? COLORS.primary : COLORS.textSec}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* TABS */}
+      <View style={styles.tabContainer}>
+        <View style={styles.tabWrapper}>
+          <Pressable
+            style={[
+              styles.tabItem,
+              activeTab === "published" && styles.tabItemActive,
+            ]}
+            onPress={() => setActiveTab("published")}
           >
-            <Filter size={20} color={theme.colors.primary.DEFAULT} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={() => router.push("/create")}
-            activeOpacity={0.8}
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "published" && styles.tabTextActive,
+              ]}
+            >
+              Terbit ({recipes.filter((r) => r.isPrivate === 0).length})
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.tabItem,
+              activeTab === "draft" && styles.tabItemActive,
+            ]}
+            onPress={() => setActiveTab("draft")}
           >
-            <Plus size={20} color="#FFFFFF" />
-            <Text style={styles.createButtonText}>Create</Text>
-          </TouchableOpacity>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "draft" && styles.tabTextActive,
+              ]}
+            >
+              Draf ({recipes.filter((r) => r.isPrivate === 1).length})
+            </Text>
+          </Pressable>
         </View>
       </View>
 
-      {/* Tabs */}
-      <View style={styles.tabsContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'published' && styles.activeTab]}
-          onPress={() => setActiveTab('published')}
-        >
-          <Text style={[styles.tabText, activeTab === 'published' && styles.activeTabText]}>
-            Published ({recipes.filter(r => r.isPrivate === 0).length})
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'draft' && styles.activeTab]}
-          onPress={() => setActiveTab('draft')}
-        >
-          <Text style={[styles.tabText, activeTab === 'draft' && styles.activeTabText]}>
-            Draft ({recipes.filter(r => r.isPrivate === 1).length})
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={filteredRecipes}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <View style={styles.cardWrapper}>
+      {/* LIST */}
+      {isLoading ? (
+        <View style={styles.centerState}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={filteredRecipes}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
             <MyRecipeCard
               recipe={item}
               onPress={() => router.push(`/recipe/${item.id}`)}
-              onEdit={() => handleEditRecipe(item)}
-              onDelete={() => handleDeleteRecipe(item)}
+              onEdit={() => handleEdit(item)}
+              onDelete={() => handleDelete(item)}
             />
-          </View>
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          !isLoading ? (
+          )}
+          ListEmptyComponent={
             <View style={styles.emptyState}>
-              <View style={styles.emptyIconBg}>
-                <ChefHat size={40} color={theme.colors.primary.DEFAULT} />
+              <View style={styles.emptyIconCircle}>
+                <ChefHat size={48} color={COLORS.primary} />
               </View>
               <Text style={styles.emptyTitle}>
-                {activeTab === 'published' ? 'No Published Recipes' : 'No Draft Recipes'}
+                {activeTab === "published" ? "Belum Ada Resep" : "Draf Kosong"}
               </Text>
-              <Text style={styles.emptySubtitle}>
-                {activeTab === 'published'
-                  ? 'You haven\'t published any recipes yet. Create and publish your first recipe!'
-                  : 'You don\'t have any draft recipes. Start creating!'
-                }
+              <Text style={styles.emptyText}>
+                {activeTab === "published"
+                  ? "Kamu belum menerbitkan resep apapun. Yuk, bagikan masakan andalanmu!"
+                  : "Tidak ada resep yang disimpan di draf saat ini."}
               </Text>
             </View>
-          ) : null
-        }
-      />
+          }
+        />
+      )}
 
-      {/* Filter Modal */}
-      <Modal
-        visible={showFilterModal}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setShowFilterModal(false)}
-      >
+      {/* MODAL FILTER */}
+      <Modal visible={showFilterModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filter by Category</Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {CATEGORIES.map((category) => (
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Filter Kategori</Text>
+              <TouchableOpacity onPress={() => setShowFilterModal(false)}>
+                <X size={20} color={COLORS.textMain} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ maxHeight: 300 }}>
+              {CATEGORIES.map((cat) => (
                 <TouchableOpacity
-                  key={category.id}
+                  key={cat.id}
                   style={[
-                    styles.categoryOption,
-                    selectedCategory === category.id && styles.selectedCategoryOption
+                    styles.modalOption,
+                    selectedCategory === cat.id && styles.modalOptionActive,
                   ]}
                   onPress={() => {
-                    setSelectedCategory(category.id);
+                    setSelectedCategory(cat.id);
                     setShowFilterModal(false);
                   }}
                 >
-                  <Text style={[
-                    styles.categoryOptionText,
-                    selectedCategory === category.id && styles.selectedCategoryOptionText
-                  ]}>
-                    {category.name}
+                  <Text
+                    style={[
+                      styles.modalOptionText,
+                      selectedCategory === cat.id &&
+                        styles.modalOptionTextActive,
+                    ]}
+                  >
+                    {cat.name}
                   </Text>
+                  {selectedCategory === cat.id && (
+                    <Utensils size={16} color={COLORS.primary} />
+                  )}
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            <TouchableOpacity
-              style={styles.closeModalButton}
-              onPress={() => setShowFilterModal(false)}
-            >
-              <Text style={styles.closeModalButtonText}>Close</Text>
-            </TouchableOpacity>
+
+            {selectedCategory !== "all" && (
+              <TouchableOpacity
+                style={styles.resetFilterBtn}
+                onPress={() => {
+                  setSelectedCategory("all");
+                  setShowFilterModal(false);
+                }}
+              >
+                <Text style={styles.resetFilterText}>Reset Filter</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
@@ -302,248 +413,315 @@ export default function MyRecipesScreen() {
   );
 }
 
+// --- STYLES ---
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: theme.colors.neutral.bg,
-  },
+  container: { flex: 1, backgroundColor: COLORS.bg },
+  centerState: { flex: 1, justifyContent: "center", alignItems: "center" },
+
+  // HEADER
   header: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.md,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.neutral.light,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 16,
+    backgroundColor: COLORS.surface,
   },
   headerTitle: {
-    fontSize: 24,
-    fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
+    fontSize: 22,
+    fontFamily: theme.font.bold, // Mulish Bold
+    color: COLORS.textMain,
+    letterSpacing: -0.5,
   },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing.sm,
-  },
-  filterButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: theme.colors.neutral.light,
+  headerSubtitle: {
+    fontSize: 13,
+    color: COLORS.textSec,
+    marginTop: 2,
+    fontFamily: theme.font.regular, // Mulish Regular
   },
   createButton: {
     flexDirection: "row",
-    backgroundColor: theme.colors.primary.DEFAULT,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 12,
     alignItems: "center",
-    gap: 4,
+    gap: 6,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   createButtonText: {
-    color: "#FFFFFF",
-    fontFamily: theme.font.medium,
+    color: "#FFF",
+    fontFamily: theme.font.bold, // Mulish Bold
     fontSize: 14,
   },
-  tabsContainer: {
+
+  // TOOLBAR
+  toolbar: {
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.neutral.light,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    backgroundColor: COLORS.surface,
+    gap: 12,
   },
-  tab: {
+  searchBar: {
     flex: 1,
-    paddingVertical: 12,
+    flexDirection: "row",
     alignItems: "center",
-    borderRadius: 8,
-    marginHorizontal: 4,
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 44,
   },
-  activeTab: {
-    backgroundColor: theme.colors.primary.bg,
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    color: COLORS.textMain,
+    fontFamily: theme.font.medium, // Mulish Medium
+    height: "100%",
+  },
+  filterBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: COLORS.inputBg,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  filterBtnActive: { backgroundColor: "#ECFDF5", borderColor: COLORS.primary },
+
+  // TABS
+  tabContainer: {
+    backgroundColor: COLORS.surface,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  tabWrapper: {
+    flexDirection: "row",
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 12,
+    padding: 4,
+  },
+  tabItem: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  tabItemActive: {
+    backgroundColor: "#FFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   tabText: {
-    fontSize: 14,
-    fontFamily: theme.font.medium,
-    color: theme.colors.neutral.medium,
+    fontSize: 13,
+    fontFamily: theme.font.medium, // Mulish Medium
+    color: COLORS.textSec,
   },
-  activeTabText: {
-    color: theme.colors.primary.DEFAULT,
-    fontFamily: theme.font.semibold,
+  tabTextActive: {
+    color: COLORS.textMain,
+    fontFamily: theme.font.bold, // Mulish Bold
   },
-  listContent: {
-    padding: theme.spacing.md,
-    paddingBottom: 100,
-  },
-  cardWrapper: {
-    marginBottom: theme.spacing.md,
-  },
-  cardContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#FFFFFF',
-    borderRadius: theme.radius.md,
-    padding: theme.spacing.sm,
-    gap: theme.spacing.md,
-    shadowColor: theme.colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+
+  // LIST & CARD
+  listContent: { padding: 20, paddingBottom: 100 },
+  card: {
+    flexDirection: "row",
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: theme.colors.neutral.light,
+    borderColor: COLORS.border,
+    shadowColor: "#64748B",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
-  imageContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: theme.radius.sm,
-    overflow: 'hidden',
-    backgroundColor: theme.colors.neutral.light,
+  cardImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: COLORS.inputBg,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  content: {
+  cardContent: {
     flex: 1,
-    minHeight: 96,
+    marginLeft: 14,
+    justifyContent: "space-between",
     paddingVertical: 2,
   },
-  title: {
-    fontSize: 16,
-    fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
-    lineHeight: 22,
-    marginBottom: 4,
+  cardHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
   },
-  description: {
-    fontSize: 12,
-    color: theme.colors.neutral.medium,
-    lineHeight: 18,
-    fontFamily: theme.font.regular,
-    marginBottom: 4,
-  },
-  author: {
-    fontSize: 11,
-    fontFamily: theme.font.semibold,
-    color: theme.colors.neutral.dark,
-    marginBottom: theme.spacing.xs,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  timeText: {
-    fontSize: 12,
-    fontFamily: theme.font.medium,
-    color: theme.colors.neutral.medium,
-  },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: theme.colors.neutral.light,
-    marginHorizontal: 10,
-  },
-  category: {
-    fontSize: 12,
-    fontFamily: theme.font.medium,
-    color: theme.colors.neutral.medium,
-  },
-  actionsContainer: {
-    flexDirection: 'column',
-    gap: 8,
-    paddingTop: 8,
-  },
-  actionButton: {
-    padding: 8,
+  badgeContainer: {
+    backgroundColor: COLORS.inputBg,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 6,
-    backgroundColor: theme.colors.neutral.light,
   },
+  categoryBadge: {
+    fontSize: 10,
+    fontFamily: theme.font.bold, // Mulish Bold
+    color: COLORS.textSec,
+    textTransform: "uppercase",
+  },
+  draftBadge: {
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  draftText: {
+    fontSize: 10,
+    fontFamily: theme.font.bold, // Mulish Bold
+    color: "#D97706",
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontFamily: theme.font.bold, // Mulish Bold
+    color: COLORS.textMain,
+    marginBottom: 4,
+  },
+  cardDesc: {
+    fontSize: 12,
+    color: COLORS.textSec,
+    fontFamily: theme.font.regular, // Mulish Regular
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  cardFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.bg,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  metaText: {
+    fontSize: 12,
+    fontFamily: theme.font.medium, // Mulish Medium
+    color: COLORS.textSec,
+  },
+  actionRow: { flexDirection: "row", gap: 8 },
+  iconBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: "#ECFDF5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconBtnDanger: { backgroundColor: "#FEF2F2" },
+
+  // EMPTY STATE
   emptyState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 100,
+    marginTop: 60,
+    paddingHorizontal: 40,
   },
-  emptyIconBg: {
+  emptyIconCircle: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: theme.colors.primary.bg,
+    backgroundColor: "#ECFDF5",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 20,
   },
   emptyTitle: {
     fontSize: 18,
-    fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
+    fontFamily: theme.font.bold, // Mulish Bold
+    color: COLORS.textMain,
     marginBottom: 8,
   },
-  emptySubtitle: {
-    fontSize: 14,
-    fontFamily: theme.font.regular,
-    color: theme.colors.neutral.medium,
+  emptyText: {
     textAlign: "center",
-    paddingHorizontal: 40,
+    color: COLORS.textSec,
+    fontSize: 14,
+    lineHeight: 22,
+    fontFamily: theme.font.medium, // Mulish Medium
   },
+
+  // MODAL
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(15, 23, 42, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: theme.spacing.lg,
-    width: '80%',
-    maxHeight: '60%',
+  modalCard: {
+    width: "85%",
+    backgroundColor: "#FFF",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
   },
   modalTitle: {
     fontSize: 18,
-    fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
-    marginBottom: theme.spacing.md,
-    textAlign: 'center',
+    fontFamily: theme.font.bold, // Mulish Bold
+    color: COLORS.textMain,
   },
-  categoryOption: {
+  modalOption: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.inputBg,
+  },
+  modalOptionActive: { backgroundColor: "#F8FAFC" },
+  modalOptionText: {
+    fontSize: 15,
+    color: COLORS.textMain,
+    fontFamily: theme.font.medium, // Mulish Medium
+  },
+  modalOptionTextActive: {
+    color: COLORS.primary,
+    fontFamily: theme.font.bold, // Mulish Bold
+  },
+  resetFilterBtn: {
+    marginTop: 16,
+    alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    backgroundColor: theme.colors.neutral.light,
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 10,
   },
-  selectedCategoryOption: {
-    backgroundColor: theme.colors.primary.bg,
-  },
-  categoryOptionText: {
-    fontSize: 16,
-    fontFamily: theme.font.medium,
-    color: theme.colors.neutral.dark,
-  },
-  selectedCategoryOptionText: {
-    color: theme.colors.primary.DEFAULT,
-    fontFamily: theme.font.semibold,
-  },
-  closeModalButton: {
-    marginTop: theme.spacing.md,
-    paddingVertical: 12,
-    backgroundColor: theme.colors.primary.DEFAULT,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  closeModalButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: theme.font.medium,
+  resetFilterText: {
+    color: COLORS.textSec,
+    fontFamily: theme.font.semibold, // Mulish SemiBold
+    fontSize: 14,
   },
 });

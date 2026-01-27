@@ -1,17 +1,22 @@
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import {
+  AlignLeft,
   Check,
   ChevronLeft,
   Clock,
   Image as ImageIcon,
-  Trash2
+  Plus,
+  Trash2,
+  Utensils
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -26,6 +31,18 @@ import { SELECTABLE_CATEGORIES } from "../../src/constants/categories";
 import { execSql, querySql } from "../../src/services/db";
 import { theme } from "../../src/theme";
 
+// --- COLORS PALETTE (Parsinta/Intent Style) ---
+const COLORS = {
+  surface: "#FFFFFF",
+  background: "#F8FAFC", // Slate-50
+  border: "#E2E8F0", // Slate-200
+  inputBg: "#F1F5F9", // Slate-100
+  textMain: "#0F172A", // Slate-900
+  textSec: "#64748B", // Slate-500
+  primary: theme.colors.primary.DEFAULT || "#4F46E5", // Indigo-600 default
+  danger: "#EF4444",
+};
+
 export default function CreateRecipeForm() {
   const [title, setTitle] = useState("");
   const [cookingTime, setCookingTime] = useState("");
@@ -36,25 +53,21 @@ export default function CreateRecipeForm() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- HANDLERS ---
+  // --- HANDLERS (Sama seperti sebelumnya) ---
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Izin Diperlukan", "Mohon izinkan akses galeri untuk mengupload foto resep.");
+      Alert.alert("Izin Diperlukan", "Mohon izinkan akses galeri.");
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.7,
     });
-
-    if (!result.canceled && result.assets[0]) {
-      setImageUri(result.assets[0].uri);
-    }
+    if (!result.canceled && result.assets[0]) setImageUri(result.assets[0].uri);
   };
 
   const handleAddIngredient = () => setIngredients([...ingredients, ""]);
@@ -82,26 +95,17 @@ export default function CreateRecipeForm() {
   };
 
   const handleSave = async () => {
-    // 1. Validasi Dasar
-    if (!title.trim()) {
-      Alert.alert("Data Kurang", "Mohon isi judul resep.");
-      return;
-    }
-    if (ingredients.filter((i) => i.trim()).length === 0) {
-      Alert.alert("Data Kurang", "Mohon isi minimal satu bahan.");
-      return;
-    }
+    if (!title.trim()) return Alert.alert("Ops", "Judul resep wajib diisi.");
+    if (!ingredients.some((i) => i.trim()))
+      return Alert.alert("Ops", "Isi minimal satu bahan.");
 
     setIsSubmitting(true);
-
     try {
-      // 2. Ambil User Session (Creator)
+      // Fetch User Logic (Simplified for brevity based on your code)
       const session = await querySql<{ email: string }>(
-        "SELECT email FROM session WHERE id = 1"
+        "SELECT email FROM session WHERE id = 1",
       );
       const userEmail = session[0]?.email;
-
-      // Default fallback jika session kosong (misal belum login)
       let creatorName = "Anonymous Chef";
       let creatorEmail = "guest@example.com";
 
@@ -109,29 +113,19 @@ export default function CreateRecipeForm() {
         creatorEmail = userEmail;
         const user = await querySql<{ fullName: string }>(
           "SELECT fullName FROM users WHERE email = ?",
-          [userEmail]
+          [userEmail],
         );
-        if (user.length > 0 && user[0].fullName) {
-          creatorName = user[0].fullName;
-        }
+        if (user.length > 0) creatorName = user[0].fullName;
       }
 
-      // 3. Bersihkan Data Array
-      const validIngredients = ingredients.filter((i) => i.trim());
-      const validSteps = steps.filter((s) => s.trim());
-      
-      // Format Waktu (Pastikan string "XX mnt")
-      const formattedTime = cookingTime.trim() 
-        ? (cookingTime.toLowerCase().includes("mnt") ? cookingTime : `${cookingTime} mnt`)
+      const formattedTime = cookingTime.trim()
+        ? cookingTime.toLowerCase().includes("mnt")
+          ? cookingTime
+          : `${cookingTime} mnt`
         : "15 mnt";
 
-      // 4. Query Insert
       await execSql(
-        `INSERT INTO recipes (
-          title, description, creator, creatorType, creator_email,
-          cookingTime, category, isPrivate, rating, calories,
-          ingredients, steps, image
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO recipes (title, description, creator, creatorType, creator_email, cookingTime, category, isPrivate, rating, calories, ingredients, steps, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           title.trim(),
           description.trim(),
@@ -140,215 +134,278 @@ export default function CreateRecipeForm() {
           creatorEmail,
           formattedTime,
           category,
-          0, // 0 = Public, 1 = Private
-          0, // Rating awal 0
-          "0 kkal", // Default calories
-          JSON.stringify(validIngredients),
-          JSON.stringify(validSteps),
+          0,
+          0,
+          "0 kkal",
+          JSON.stringify(ingredients.filter((i) => i.trim())),
+          JSON.stringify(steps.filter((s) => s.trim())),
           imageUri || null,
-        ]
+        ],
       );
 
-      Alert.alert("Berhasil!", "Resep Anda telah diterbitkan.", [
+      Alert.alert("Sukses", "Resep berhasil diterbitkan!", [
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch (e) {
-      console.error("Save error:", e);
-      Alert.alert("Error", "Gagal menyimpan resep. Coba lagi nanti.");
+      console.error(e);
+      Alert.alert("Error", "Gagal menyimpan resep.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // --- RENDER UI ---
+  // --- UI COMPONENTS ---
+
+  const SectionLabel = ({ title, icon: Icon }: any) => (
+    <View style={styles.sectionLabelContainer}>
+      {Icon && (
+        <Icon size={16} color={COLORS.primary} style={{ marginRight: 8 }} />
+      )}
+      <Text style={styles.sectionLabel}>{title}</Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
-          <ChevronLeft size={24} color={theme.colors.neutral.dark} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Tulis Resep</Text>
-        <TouchableOpacity 
-          onPress={handleSave} 
-          disabled={isSubmitting}
-          style={[styles.iconButton, { backgroundColor: theme.colors.primary.bg }]}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <ChevronLeft size={24} color={COLORS.textMain} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Tulis Resep Baru</Text>
+          <View style={{ width: 40 }} />
+        </View>
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={theme.colors.primary.DEFAULT} />
-          ) : (
-            <Check size={20} color={theme.colors.primary.DEFAULT} />
-          )}
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        
-        {/* IMAGE PICKER */}
-        <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-          {imageUri ? (
-            <>
-              <Image source={{ uri: imageUri }} style={styles.imagePreview} />
-              <View style={styles.imageOverlay}>
-                <ImageIcon size={20} color="#FFF" />
-                <Text style={styles.imageOverlayText}>Ganti Foto</Text>
+          {/* IMAGE UPLOAD HERO */}
+          <TouchableOpacity
+            style={styles.imageUploader}
+            onPress={pickImage}
+            activeOpacity={0.8}
+          >
+            {imageUri ? (
+              <>
+                <Image
+                  source={{ uri: imageUri }}
+                  style={styles.uploadedImage}
+                />
+                <View style={styles.editImageBadge}>
+                  <ImageIcon size={14} color="#FFF" />
+                  <Text style={styles.editImageText}>Ubah</Text>
+                </View>
+              </>
+            ) : (
+              <View style={styles.imagePlaceholder}>
+                <View style={styles.iconCircle}>
+                  <ImageIcon size={28} color={COLORS.primary} />
+                </View>
+                <Text style={styles.uploadTitle}>Foto Masakan</Text>
+                <Text style={styles.uploadSubtitle}>
+                  Ketuk untuk upload (Maks 5MB)
+                </Text>
               </View>
-            </>
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <View style={styles.imageIconCircle}>
-                <ImageIcon size={32} color={theme.colors.neutral.medium} />
-              </View>
-              <Text style={styles.imagePlaceholderText}>Tambah Foto Masakan</Text>
-              <Text style={styles.imageHint}>Maksimal 5MB (JPG/PNG)</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+            )}
+          </TouchableOpacity>
 
-        {/* BASIC INFO */}
-        <View style={styles.section}>
-          <Text style={styles.label}>Judul Resep</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Contoh: Nasi Goreng Spesial"
-            placeholderTextColor={theme.colors.neutral.medium}
-            value={title}
-            onChangeText={setTitle}
-          />
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.section, { flex: 1, marginRight: 12 }]}>
-            <Text style={styles.label}>Durasi (Menit)</Text>
-            <View style={styles.inputWithIcon}>
-              <Clock size={18} color={theme.colors.neutral.medium} style={{ marginRight: 8 }} />
+          <View style={styles.formCard}>
+            {/* JUDUL */}
+            <View style={styles.inputGroup}>
+              <SectionLabel title="Judul Resep" />
               <TextInput
-                style={{ flex: 1, color: theme.colors.neutral.dark, fontFamily: theme.font.medium }}
-                placeholder="45"
-                placeholderTextColor={theme.colors.neutral.medium}
-                keyboardType="numeric"
-                value={cookingTime}
-                onChangeText={setCookingTime}
+                style={styles.inputLg}
+                placeholder="Contoh: Nasi Goreng Kampung"
+                placeholderTextColor={COLORS.textSec}
+                value={title}
+                onChangeText={setTitle}
               />
             </View>
-          </View>
-        </View>
 
-        {/* CATEGORY */}
-        <View style={styles.section}>
-          <Text style={styles.label}>Kategori</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.catScroll}>
-            {SELECTABLE_CATEGORIES.map((cat) => {
-              const isSelected = category === cat.id;
-              return (
-                <Pressable
-                  key={cat.id}
-                  onPress={() => setCategory(cat.id)}
-                  style={[
-                    styles.catChip,
-                    isSelected ? styles.catChipActive : styles.catChipInactive,
-                  ]}
-                >
-                  <Text style={[
-                    styles.catText, 
-                    isSelected ? styles.catTextActive : styles.catTextInactive
-                  ]}>
-                    {cat.name}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        {/* DESCRIPTION */}
-        <View style={styles.section}>
-          <Text style={styles.label}>Deskripsi</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Ceritakan sedikit tentang resep ini..."
-            placeholderTextColor={theme.colors.neutral.medium}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-            value={description}
-            onChangeText={setDescription}
-          />
-        </View>
-
-        {/* INGREDIENTS */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Bahan-bahan</Text>
-            <TouchableOpacity onPress={handleAddIngredient}>
-              <Text style={styles.actionText}>+ Tambah</Text>
-            </TouchableOpacity>
-          </View>
-          
-          {ingredients.map((ing, idx) => (
-            <View key={idx} style={styles.dynamicRow}>
-              <TextInput
-                style={styles.dynamicInput}
-                placeholder={`Bahan ${idx + 1}`}
-                placeholderTextColor={theme.colors.neutral.medium}
-                value={ing}
-                onChangeText={(text) => handleChangeIngredient(text, idx)}
-              />
-              {ingredients.length > 1 && (
-                <TouchableOpacity onPress={() => handleRemoveIngredient(idx)} style={styles.deleteBtn}>
-                  <Trash2 size={18} color={theme.colors.danger.DEFAULT} />
-                </TouchableOpacity>
-              )}
-            </View>
-          ))}
-        </View>
-
-        {/* STEPS */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Langkah Pembuatan</Text>
-            <TouchableOpacity onPress={handleAddStep}>
-              <Text style={styles.actionText}>+ Tambah</Text>
-            </TouchableOpacity>
-          </View>
-          
-          {steps.map((step, idx) => (
-            <View key={idx} style={styles.dynamicRow}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>{idx + 1}</Text>
+            {/* DURASI & KATEGORI */}
+            <View style={styles.rowGroup}>
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <SectionLabel title="Durasi" icon={Clock} />
+                <View style={styles.inputIconWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="30"
+                    keyboardType="numeric"
+                    placeholderTextColor={COLORS.textSec}
+                    value={cookingTime}
+                    onChangeText={setCookingTime}
+                  />
+                  <Text style={styles.suffix}>Menit</Text>
+                </View>
               </View>
+            </View>
+
+            {/* KATEGORI SCROLL */}
+            <View style={styles.inputGroup}>
+              <SectionLabel title="Kategori" icon={AlignLeft} />
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingRight: 20 }}
+              >
+                {SELECTABLE_CATEGORIES.map((cat) => {
+                  const isActive = category === cat.id;
+                  return (
+                    <Pressable
+                      key={cat.id}
+                      onPress={() => setCategory(cat.id)}
+                      style={[styles.chip, isActive && styles.chipActive]}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          isActive && styles.chipTextActive,
+                        ]}
+                      >
+                        {cat.name}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            {/* DESKRIPSI */}
+            <View style={styles.inputGroup}>
+              <SectionLabel title="Deskripsi Singkat" />
               <TextInput
-                style={[styles.dynamicInput, styles.textAreaSmall]}
-                placeholder={`Langkah ${idx + 1}`}
-                placeholderTextColor={theme.colors.neutral.medium}
+                style={[styles.input, styles.textArea]}
+                placeholder="Ceritakan keunikan resep ini atau tips rahasia..."
+                placeholderTextColor={COLORS.textSec}
                 multiline
-                value={step}
-                onChangeText={(text) => handleChangeStep(text, idx)}
+                textAlignVertical="top"
+                value={description}
+                onChangeText={setDescription}
               />
-              {steps.length > 1 && (
-                <TouchableOpacity onPress={() => handleRemoveStep(idx)} style={styles.deleteBtn}>
-                  <Trash2 size={18} color={theme.colors.danger.DEFAULT} />
-                </TouchableOpacity>
-              )}
             </View>
-          ))}
-        </View>
+          </View>
 
-        {/* SUBMIT BUTTON (BOTTOM) */}
-        <TouchableOpacity 
-          style={styles.submitBtn} 
-          onPress={handleSave}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#FFF" />
-          ) : (
-            <Text style={styles.submitBtnText}>Terbitkan Resep</Text>
-          )}
-        </TouchableOpacity>
+          {/* BAHAN-BAHAN */}
+          <View style={styles.sectionCard}>
+            <View style={styles.cardHeader}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Utensils
+                  size={18}
+                  color={COLORS.primary}
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={styles.cardTitle}>Bahan-bahan</Text>
+              </View>
+              <Text style={styles.countBadge}>{ingredients.length} Item</Text>
+            </View>
 
-      </ScrollView>
+            <View style={styles.listContainer}>
+              {ingredients.map((ing, idx) => (
+                <View key={idx} style={styles.listItem}>
+                  <View style={styles.bullet} />
+                  <TextInput
+                    style={styles.listInput}
+                    placeholder={`Bahan ke-${idx + 1}`}
+                    placeholderTextColor={COLORS.textSec}
+                    value={ing}
+                    onChangeText={(text) => handleChangeIngredient(text, idx)}
+                  />
+                  {ingredients.length > 1 && (
+                    <TouchableOpacity
+                      onPress={() => handleRemoveIngredient(idx)}
+                      style={styles.iconBtn}
+                    >
+                      <Trash2 size={18} color={COLORS.textSec} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddIngredient}
+              >
+                <Plus size={18} color={COLORS.primary} />
+                <Text style={styles.addButtonText}>Tambah Bahan</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* LANGKAH PEMBUATAN */}
+          <View style={styles.sectionCard}>
+            <View style={styles.cardHeader}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <AlignLeft
+                  size={18}
+                  color={COLORS.primary}
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={styles.cardTitle}>Langkah Pembuatan</Text>
+              </View>
+            </View>
+
+            <View style={styles.listContainer}>
+              {steps.map((step, idx) => (
+                <View key={idx} style={styles.stepItem}>
+                  <View style={styles.stepNumberBadge}>
+                    <Text style={styles.stepNumberText}>{idx + 1}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <TextInput
+                      style={styles.stepInput}
+                      placeholder={`Jelaskan langkah ${idx + 1}...`}
+                      placeholderTextColor={COLORS.textSec}
+                      multiline
+                      value={step}
+                      onChangeText={(text) => handleChangeStep(text, idx)}
+                    />
+                  </View>
+                  {steps.length > 1 && (
+                    <TouchableOpacity
+                      onPress={() => handleRemoveStep(idx)}
+                      style={styles.iconBtn}
+                    >
+                      <Trash2 size={18} color={COLORS.textSec} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddStep}
+              >
+                <Plus size={18} color={COLORS.primary} />
+                <Text style={styles.addButtonText}>Tambah Langkah</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* SUBMIT BUTTON */}
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSave}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <>
+                  <Check size={20} color="#FFF" style={{ marginRight: 8 }} />
+                  <Text style={styles.submitText}>Terbitkan Resep</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -356,245 +413,323 @@ export default function CreateRecipeForm() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.neutral.bg,
+    backgroundColor: COLORS.background,
   },
+
+  // HEADER
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: "#FFF",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.neutral.light,
+    borderBottomColor: COLORS.border,
   },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
-  },
-  iconButton: {
+  backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: theme.colors.neutral.bg,
+    backgroundColor: COLORS.background,
   },
-  content: {
-    padding: theme.spacing.md,
-    paddingBottom: 40,
+  headerTitle: {
+    fontSize: 16,
+    fontFamily: theme.font.bold,
+    color: COLORS.textMain,
   },
-  
-  // Image Picker
-  imagePicker: {
-    height: 200,
-    backgroundColor: "#FFF",
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
-    borderColor: theme.colors.neutral.light,
+
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 100,
+  },
+
+  // IMAGE UPLOADER (HERO STYLE)
+  imageUploader: {
+    height: 220,
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     borderStyle: "dashed",
-    overflow: "hidden",
-    marginBottom: 24,
     justifyContent: "center",
     alignItems: "center",
-  },
-  imagePreview: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  imageOverlay: {
-    position: "absolute",
-    bottom: 12,
-    right: 12,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    gap: 6,
-  },
-  imageOverlayText: {
-    color: "#FFF",
-    fontSize: 12,
-    fontFamily: theme.font.medium,
+    marginBottom: 24,
+    overflow: "hidden",
   },
   imagePlaceholder: {
     alignItems: "center",
   },
-  imageIconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: theme.colors.neutral.bg,
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#EEF2FF", // Light Indigo
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
   },
-  imagePlaceholderText: {
-    fontSize: 14,
-    fontFamily: theme.font.medium,
-    color: theme.colors.neutral.dark,
+  uploadTitle: {
+    fontSize: 16,
+    fontFamily: theme.font.bold,
+    color: COLORS.textMain,
+    marginBottom: 4,
   },
-  imageHint: {
-    fontSize: 12,
-    color: theme.colors.neutral.medium,
-    marginTop: 4,
+  uploadSubtitle: {
+    fontSize: 13,
+    color: COLORS.textSec,
   },
-
-  // Form Fields
-  section: {
-    marginBottom: 16,
+  uploadedImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
-  row: {
-    flexDirection: "row",
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: theme.font.semibold,
-    color: theme.colors.neutral.dark,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: "#FFF",
-    borderWidth: 1,
-    borderColor: theme.colors.neutral.light,
-    borderRadius: theme.radius.md,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 14,
-    fontFamily: theme.font.medium,
-    color: theme.colors.neutral.dark,
-  },
-  inputWithIcon: {
+  editImageBadge: {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    backgroundColor: "rgba(15, 23, 42, 0.7)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF",
-    borderWidth: 1,
-    borderColor: theme.colors.neutral.light,
-    borderRadius: theme.radius.md,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    gap: 6,
   },
-  textArea: {
-    minHeight: 80,
-  },
-  textAreaSmall: {
-    minHeight: 60,
-    paddingTop: 12,
+  editImageText: {
+    color: "#FFF",
+    fontSize: 12,
+    fontFamily: theme.font.medium,
   },
 
-  // Category Chips
-  catScroll: {
-    paddingRight: 20,
+  // FORM CARD
+  formCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: "#64748B",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  catChip: {
+  sectionLabelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  sectionLabel: {
+    fontSize: 14,
+    fontFamily: theme.font.semibold,
+    color: COLORS.textMain,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  rowGroup: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    fontFamily: theme.font.medium,
+    color: COLORS.textMain,
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  inputLg: {
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    fontSize: 16,
+    fontFamily: theme.font.bold, // Larger for Title
+    color: COLORS.textMain,
+  },
+  inputIconWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+  },
+  suffix: {
+    fontSize: 13,
+    color: COLORS.textSec,
+    fontFamily: theme.font.medium,
+    marginLeft: 8,
+  },
+  textArea: {
+    minHeight: 100,
+    paddingTop: 12,
+    lineHeight: 22,
+  },
+
+  // CHIPS
+  chip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    marginRight: 8,
+    backgroundColor: COLORS.surface,
     borderWidth: 1,
+    borderColor: COLORS.border,
+    marginRight: 8,
   },
-  catChipInactive: {
-    backgroundColor: "#FFF",
-    borderColor: theme.colors.neutral.light,
+  chipActive: {
+    backgroundColor: COLORS.textMain,
+    borderColor: COLORS.textMain,
   },
-  catChipActive: {
-    backgroundColor: theme.colors.primary.DEFAULT,
-    borderColor: theme.colors.primary.DEFAULT,
-  },
-  catText: {
+  chipText: {
     fontSize: 13,
     fontFamily: theme.font.medium,
+    color: COLORS.textSec,
   },
-  catTextInactive: {
-    color: theme.colors.neutral.medium,
-  },
-  catTextActive: {
+  chipTextActive: {
     color: "#FFF",
     fontFamily: theme.font.bold,
   },
 
-  // Dynamic Lists
-  sectionContainer: {
-    marginTop: 8,
-    marginBottom: 24,
-    backgroundColor: "#FFF",
-    borderRadius: theme.radius.md,
-    padding: 16,
+  // SECTION CARD (Ingredients/Steps)
+  sectionCard: {
+    marginBottom: 20,
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: theme.colors.neutral.light,
+    borderColor: COLORS.border,
+    overflow: "hidden",
   },
-  sectionHeader: {
+  cardHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    backgroundColor: "#F8FAFC", // Slightly diff bg header
   },
-  sectionTitle: {
-    fontSize: 16,
+  cardTitle: {
+    fontSize: 15,
     fontFamily: theme.font.bold,
-    color: theme.colors.neutral.dark,
+    color: COLORS.textMain,
   },
-  actionText: {
-    fontSize: 14,
-    fontFamily: theme.font.semibold,
-    color: theme.colors.primary.DEFAULT,
+  countBadge: {
+    fontSize: 12,
+    color: COLORS.textSec,
+    backgroundColor: COLORS.border,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
-  dynamicRow: {
+  listContainer: {
+    padding: 16,
+  },
+
+  // LIST ITEMS
+  listItem: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     marginBottom: 12,
   },
-  dynamicInput: {
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.primary,
+    marginRight: 12,
+  },
+  listInput: {
     flex: 1,
-    backgroundColor: theme.colors.neutral.bg,
-    borderRadius: theme.radius.sm,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
     fontSize: 14,
-    fontFamily: theme.font.regular,
-    color: theme.colors.neutral.dark,
-    borderWidth: 1,
-    borderColor: "transparent",
+    fontFamily: theme.font.medium,
+    color: COLORS.textMain,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    paddingVertical: 8,
   },
-  deleteBtn: {
-    marginLeft: 8,
-    padding: 10,
-    justifyContent: "center",
+
+  // STEP ITEMS
+  stepItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 16,
   },
-  stepNumber: {
+  stepNumberBadge: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: theme.colors.primary.bg,
+    backgroundColor: COLORS.textMain,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 8,
-    marginTop: 10,
+    marginRight: 12,
+    marginTop: 4,
   },
   stepNumberText: {
+    color: "#FFF",
     fontSize: 12,
-    fontFamily: theme.font.bold,
-    color: theme.colors.primary.DEFAULT,
+    fontWeight: "bold",
+  },
+  stepInput: {
+    flex: 1,
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    fontFamily: theme.font.regular,
+    color: COLORS.textMain,
+    lineHeight: 20,
+  },
+  iconBtn: {
+    padding: 8,
+    marginLeft: 4,
   },
 
-  // Submit Button
-  submitBtn: {
-    backgroundColor: theme.colors.primary.DEFAULT,
-    paddingVertical: 16,
-    borderRadius: theme.radius.lg,
+  // ADD BUTTON
+  addButton: {
+    flexDirection: "row",
     alignItems: "center",
-    shadowColor: theme.colors.primary.DEFAULT,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 10,
+    borderStyle: "dashed",
+    marginTop: 8,
+  },
+  addButtonText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: theme.font.medium,
+    color: COLORS.primary,
+  },
+
+  // FOOTER
+  footer: {
+    marginTop: 10,
     marginBottom: 20,
   },
-  submitBtnText: {
+  submitButton: {
+    backgroundColor: COLORS.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
+    borderRadius: 14,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  submitText: {
     color: "#FFF",
     fontSize: 16,
     fontFamily: theme.font.bold,

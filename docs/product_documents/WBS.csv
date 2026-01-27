@@ -26,17 +26,17 @@ ID,Screen/Module,Task,Assigned To,Status,Completed By,Dependencies,Priority,Est.
 4.3,My Recipes Screen,Empty state component,Vointra Namara Fidelito,Done,,4.1,P1,2,12/24/2025,12/25/2025,Empty state component; PIC: Vointra Namara Fidelito; DEPS: 4.1
 4.4,My Recipes Screen,Edit & delete actions,Vointra Namara Fidelito,Done,,4.1,P1,2,12/24/2025,12/25/2025,Edit & delete actions; PIC: Vointra Namara Fidelito; DEPS: 4.1
 5,Saved Recipes Screen,,Muhammad Syahid Azhar Azizi,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Muhammad Syahid Azhar Azizi
-5.1,Saved Recipes Screen,Layout dengan FlatList,Muhammad Syahid Azhar Azizi,Todo,,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan FlatList; PIC: Muhammad Syahid Azhar Azizi; DEPS: 2.1
-5.2,Saved Recipes Screen,Filter by savedRecipeIds,Muhammad Syahid Azhar Azizi,Todo,,"0.4, 5.1",P0,2,12/24/2025,12/25/2025,"Filter by savedRecipeIds; PIC: Muhammad Syahid Azhar Azizi; DEPS: 0.4, 5.1"
-5.3,Saved Recipes Screen,Empty state (belum ada saved),Muhammad Syahid Azhar Azizi,Todo,,5.1,P1,1,12/24/2025,12/25/2025,Empty state (belum ada saved); PIC: Muhammad Syahid Azhar Azizi; DEPS: 5.1
-6,Create/Edit Recipe Screen,,Dyo Aristo,Module Todo,,,P0,,12/22/2025,12/24/2025,; PIC: Dyo Aristo
-6.1,Create/Edit Recipe Screen,"Form UI: title, description, category",Dyo Aristo,Todo,,0.3,P0,3,12/22/2025,12/23/2025,"Form UI: title, description, category; PIC: Dyo Aristo; DEPS: 0.3"
-6.2,Create/Edit Recipe Screen,Time & difficulty inputs,Dyo Aristo,Todo,,6.1,P0,2,12/23/2025,12/24/2025,Time & difficulty inputs; PIC: Dyo Aristo; DEPS: 6.1
-6.3,Create/Edit Recipe Screen,Image picker integration,Dyo Aristo,Todo,,"0.1, 6.1",P0,3,12/23/2025,12/24/2025,"Image picker integration; PIC: Dyo Aristo; DEPS: 0.1, 6.1"
-6.4,Create/Edit Recipe Screen,Dynamic ingredients (add/remove),Dyo Aristo,Todo,,6.1,P0,3,12/23/2025,12/24/2025,Dynamic ingredients (add/remove); PIC: Dyo Aristo; DEPS: 6.1
-6.5,Create/Edit Recipe Screen,Dynamic steps (add/remove),Dyo Aristo,Todo,,6.1,P0,3,12/23/2025,12/24/2025,Dynamic steps (add/remove); PIC: Dyo Aristo; DEPS: 6.1
-6.6,Create/Edit Recipe Screen,Privacy toggle (Switch),Dyo Aristo,Todo,,6.1,P0,1,12/23/2025,12/24/2025,Privacy toggle (Switch); PIC: Dyo Aristo; DEPS: 6.1
-6.7,Create/Edit Recipe Screen,Save logic (Draft/Published),Dyo Aristo,Todo,,"0.4, 6.1",P0,2,12/23/2025,12/24/2025,"Save logic (Draft/Published); PIC: Dyo Aristo; DEPS: 0.4, 6.1"
+5.1,Saved Recipes Screen,Layout dengan FlatList,Muhammad Syahid Azhar Azizi,Done,,2.1,P0,2,12/23/2025,12/24/2025,Layout dengan FlatList; PIC: Muhammad Syahid Azhar Azizi; DEPS: 2.1
+5.2,Saved Recipes Screen,Filter by savedRecipeIds,Muhammad Syahid Azhar Azizi,Done,,"0.4, 5.1",P0,2,12/24/2025,12/25/2025,"Filter by savedRecipeIds; PIC: Muhammad Syahid Azhar Azizi; DEPS: 0.4, 5.1"
+5.3,Saved Recipes Screen,Empty state (belum ada saved),Muhammad Syahid Azhar Azizi,Done,,5.1,P1,1,12/24/2025,12/25/2025,Empty state (belum ada saved); PIC: Muhammad Syahid Azhar Azizi; DEPS: 5.1
+6,Create/Edit Recipe Screen,,Dyo Aristo,Module Todo,Syahrul Ramadhan,,P0,,12/22/2025,12/24/2025,; PIC: Dyo Aristo; Done By: Syahrul Ramadhan
+6.1,Create/Edit Recipe Screen,"Form UI: title, description, category",Dyo Aristo,Needs RC,R. Purba Kusuma,0.3,P0,3,12/22/2025,01/27/2026,"Form UI: title, description, category; PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 0.3; Issues: Code duplication (2 CreateRecipeForm implementations), missing difficulty field"
+6.2,Create/Edit Recipe Screen,Time & difficulty inputs,Dyo Aristo,Needs RC,R. Purba Kusuma,6.1,P0,2,12/23/2025,01/27/2026,"Time & difficulty inputs; PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 6.1; Issues: CRITICAL - Difficulty field completely missing (no DB column, no UI, no types)"
+6.3,Create/Edit Recipe Screen,Image picker integration,Dyo Aristo,Done,R. Purba Kusuma,"0.1, 6.1",P0,3,12/23/2025,01/27/2026,"Image picker integration; PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 0.1, 6.1; Status: Fully implemented and production-ready"
+6.4,Create/Edit Recipe Screen,Dynamic ingredients (add/remove),Dyo Aristo,Done,R. Purba Kusuma,6.1,P0,3,12/23/2025,01/27/2026,"Dynamic ingredients (add/remove); PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 6.1; Status: Fully implemented with excellent UX"
+6.5,Create/Edit Recipe Screen,Dynamic steps (add/remove),Dyo Aristo,Done,R. Purba Kusuma,6.1,P0,3,12/23/2025,01/27/2026,"Dynamic steps (add/remove); PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 6.1; Status: Fully implemented with numbered badges"
+6.6,Create/Edit Recipe Screen,Privacy toggle (Switch),Dyo Aristo,Needs RC,R. Purba Kusuma,6.1,P0,1,12/23/2025,01/27/2026,"Privacy toggle (Switch); PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 6.1; Issues: Works in EditMyRecipe but missing from CreateRecipeForm, all new recipes default to public"
+6.7,Create/Edit Recipe Screen,Save logic (Draft/Published),Dyo Aristo,Needs RC,R. Purba Kusuma,"0.4, 6.1",P0,2,12/23/2025,01/27/2026,"Save logic (Draft/Published); PIC: Dyo Aristo; Review By: R. Purba Kusuma; DEPS: 0.4, 6.1; Issues: CRITICAL - No Recipe Status field (Draft/Published), no database column, no draft save option"
 7,Profile Screen,,Jumanta,Module Todo,,,P0,,12/23/2025,12/25/2025,; PIC: Jumanta
 7.1,Profile Screen,"UI: avatar, name, bio display",Jumanta,Done,,"0.3, 1.2",P0,2,12/23/2025,12/24/2025,"UI: avatar, name, bio display; PIC: Jumanta; DEPS: 0.3, 1.2"
 7.2,Profile Screen,Edit profile form,Jumanta,Done,,7.1,P1,3,12/24/2025,12/25/2025,Edit profile form; PIC: Jumanta; DEPS: 7.1
@@ -48,7 +48,7 @@ R.3,Code Review,Review: Home screen,R. Purba Kusuma,Done,,2.5,P0,2,12/26/2025,12
 R.4,Code Review,Review: Recipe detail,R. Purba Kusuma,Done,,3.4,P0,1,12/23/2025,12/23/2025,Review: Recipe detail; PIC: R. Purba Kusuma; DEPS: 3.4
 R.5,Code Review,Review: My recipes,R. Purba Kusuma,Done,,4.4,P0,1,12/25/2025,12/25/2025,Review: My recipes; PIC: R. Purba Kusuma; DEPS: 4.4
 R.6,Code Review,Review: Saved recipes,R. Purba Kusuma,Blocked,,5.3,P0,1,12/25/2025,12/25/2025,Review: Saved recipes; PIC: R. Purba Kusuma; DEPS: 5.3
-R.7,Code Review,Review: Create/edit recipe,R. Purba Kusuma,Blocked,,6.7,P0,2,12/24/2025,12/24/2025,Review: Create/edit recipe; PIC: R. Purba Kusuma; DEPS: 6.7
+R.7,Code Review,Review: Create/edit recipe,R. Purba Kusuma,Needs RC,Dyo Aristo,6.7,P0,2,12/24/2025,01/27/2026,"Review: Create/edit recipe; PIC: R. Purba Kusuma; Review By: Dyo Aristo; DEPS: 6.7; Status: 3/7 tasks complete, 3 need fixes, 1 partial. Critical missing: difficulty, status fields"
 R.8,Code Review,Review: Profile screen,R. Purba Kusuma,Done,,7.3,P0,1,12/25/2025,12/25/2025,Review: Profile screen; PIC: R. Purba Kusuma; DEPS: 7.3
 R.9,Code Review,Final integration review,R. Purba Kusuma,Blocked,,All reviews,P1,2,12/25/2025,12/25/2025,Final integration review; PIC: R. Purba Kusuma; DEPS: All reviews
 Q,Lutfi Zain Testing,,Lutfi Zain,Module Todo,,,P0,,12/22/2025,12/31/2025,; PIC: Lutfi Zain
@@ -58,7 +58,7 @@ Q.3,Lutfi Zain Testing,"Test: Home screen (search, filter)",Lutfi Zain,Done,,R.3
 Q.4,Lutfi Zain Testing,"Test: Recipe detail (view, save)",Lutfi Zain,Done,,R.4,P0,2,12/23/2025,12/23/2025,"Test: Recipe detail (view, save); PIC: Lutfi Zain; DEPS: R.4"
 Q.5,Lutfi Zain Testing,"Test: My recipes (tabs, actions)",Lutfi Zain,Done,,R.5,P0,2,12/25/2025,12/25/2025,"Test: My recipes (tabs, actions); PIC: Lutfi Zain; DEPS: R.5"
 Q.6,Lutfi Zain Testing,Test: Saved recipes,Lutfi Zain,Blocked,,R.6,P0,2,12/25/2025,12/25/2025,Test: Saved recipes; PIC: Lutfi Zain; DEPS: R.6
-Q.7,Lutfi Zain Testing,"Test: Create/edit (form, validation)",Lutfi Zain,Blocked,,R.7,P0,4,12/24/2025,12/24/2025,"Test: Create/edit (form, validation); PIC: Lutfi Zain; DEPS: R.7"
+Q.7,Lutfi Zain Testing,"Test: Create/edit (form, validation)",Lutfi Zain,Blocked,,R.7,P0,4,12/24/2025,12/24/2025,"Test: Create/edit (form, validation); PIC: Lutfi Zain; DEPS: R.7; Waiting for R.7 fixes"
 Q.8,Lutfi Zain Testing,"Test: Profile (view, edit, logout)",Lutfi Zain,Done,,R.8,P0,2,12/25/2025,12/25/2025,"Test: Profile (view, edit, logout); PIC: Lutfi Zain; DEPS: R.8"
 Q.9,Lutfi Zain Testing,Test: Navigation flow end-to-end,Lutfi Zain,Blocked,,Q.8,P0,2,12/26/2025,12/26/2025,Test: Navigation flow end-to-end; PIC: Lutfi Zain; DEPS: Q.8
 Q.10,Lutfi Zain Testing,Test: Data persistence,Lutfi Zain,Blocked,,Q.9,P0,2,12/27/2025,12/27/2025,Test: Data persistence; PIC: Lutfi Zain; DEPS: Q.9
@@ -70,5 +70,5 @@ B.2,Bug Fixes,Fix bugs: Home screen,Zikri Firmansyah,Done,,Q.11,P1,2,12/28/2025,
 B.3,Bug Fixes,Fix bugs: Recipe detail,Deni Hermawan,Done,,Q.11,P1,1,12/28/2025,12/30/2025,Fix bugs: Recipe detail; PIC: Deni Hermawan; DEPS: Q.11
 B.4,Bug Fixes,Fix bugs: My recipes,Vointra Namara Fidelito,Done,,Q.11,P1,1,12/28/2025,12/30/2025,Fix bugs: My recipes; PIC: Vointra Namara Fidelito; DEPS: Q.11
 B.5,Bug Fixes,Fix bugs: Saved recipes,Muhammad Syahid Azhar Azizi,Todo,,Q.11,P1,1,12/28/2025,12/30/2025,Fix bugs: Saved recipes; PIC: Muhammad Syahid Azhar Azizi; DEPS: Q.11
-B.6,Bug Fixes,Fix bugs: Create/edit recipe,Dyo Aristo,Todo,,Q.11,P1,3,12/28/2025,12/30/2025,Fix bugs: Create/edit recipe; PIC: Dyo Aristo; DEPS: Q.11
+B.6,Bug Fixes,Fix bugs: Create/edit recipe,Dyo Aristo,Todo,,Q.11,P1,3,12/28/2025,12/30/2025,Fix bugs: Create/edit recipe; PIC: Dyo Aristo; DEPS: Q.11; Priority after implementing difficulty, status, privacy toggle
 B.7,Bug Fixes,Fix bugs: Profile screen,Jumanta,Done,,Q.11,P1,1,12/28/2025,12/30/2025,Fix bugs: Profile screen; PIC: Jumanta; DEPS: Q.11

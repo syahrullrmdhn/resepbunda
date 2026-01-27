@@ -18,7 +18,9 @@
       "Bash(tasklist:*)",
       "Bash(cmd.exe /c \"taskkill /F /PID 5920\")",
       "Bash(npm install:*)",
-      "Bash(cut:*)"
+      "Bash(cut:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

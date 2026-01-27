@@ -34,7 +34,10 @@ export async function getDb() {
 
 // --- Helper Functions ---
 
-export async function querySql<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+export async function querySql<T = any>(
+  sql: string,
+  params: any[] = [],
+): Promise<T[]> {
   const db = await getDb();
 
   // Async API
@@ -53,7 +56,7 @@ export async function querySql<T = any>(sql: string, params: any[] = []): Promis
         (_: any, err: any) => {
           reject(err);
           return false;
-        }
+        },
       );
     });
   });
@@ -78,17 +81,22 @@ export async function execSql(sql: string, params: any[] = []): Promise<void> {
         (_: any, err: any) => {
           reject(err);
           return false;
-        }
+        },
       );
     });
   });
 }
 
-export async function execBatch(statements: { sql: string; params?: any[] }[]): Promise<void> {
+export async function execBatch(
+  statements: { sql: string; params?: any[] }[],
+): Promise<void> {
   const db = await getDb();
 
   // Async API
-  if (typeof db.withTransactionAsync === "function" && typeof db.runAsync === "function") {
+  if (
+    typeof db.withTransactionAsync === "function" &&
+    typeof db.runAsync === "function"
+  ) {
     await db.withTransactionAsync(async () => {
       for (const s of statements) {
         await db.runAsync(s.sql, s.params ?? []);
@@ -106,7 +114,7 @@ export async function execBatch(statements: { sql: string; params?: any[] }[]): 
         }
       },
       (err: any) => reject(err),
-      () => resolve()
+      () => resolve(),
     );
   });
 }
