@@ -1,4 +1,3 @@
-// src/types/recipe.ts
 export interface Recipe {
   id: number;
   title: string;
@@ -6,10 +5,10 @@ export interface Recipe {
   creator: string;
   creatorType: string;
   cookingTime: string;
+  difficulty: "Easy" | "Medium" | "Hard"; // BARU
+  status: "Draft" | "Published"; // BARU
   category: string;
   isPrivate: 0 | 1;
-  // Derived per-user flag: computed from saved_recipes (join table)
-  // Not persisted in recipes table; optional for UI convenience
   isFavorite?: 0 | 1;
   rating: number;
   calories: string;

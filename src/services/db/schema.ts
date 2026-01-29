@@ -29,6 +29,8 @@ export const schema = {
       creatorType TEXT,
       creator_email TEXT,
       cookingTime TEXT,
+      difficulty TEXT DEFAULT 'Medium', -- KOLOM BARU
+      status TEXT DEFAULT 'Draft',      -- KOLOM BARU
       category TEXT,
       isPrivate INTEGER DEFAULT 0,
       rating REAL,
@@ -38,7 +40,6 @@ export const schema = {
       image TEXT
     );
   `,
-  // TABEL PENTING UNTUK FITUR LOVE
   saved_recipes: `
     CREATE TABLE IF NOT EXISTS saved_recipes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
